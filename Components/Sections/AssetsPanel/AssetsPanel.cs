@@ -3,6 +3,7 @@ using Hades_Map_Editor.Data;
 using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Hades_Map_Editor.Sections
 {
     public class AssetsPanel : Panel, IComponent
     {
-        private Label notLoadedLable;
+        private Label loadingLabel;
         public Dictionary<string, AssetTab> assetsTab;
         public TabControl assetsTabControl;
 
@@ -28,13 +29,13 @@ namespace Hades_Map_Editor.Sections
             AutoScroll = true;
             Dock = DockStyle.Fill;
 
-            notLoadedLable = new Label();
-            notLoadedLable.Text = "Loading...";
-            notLoadedLable.AutoSize = false;
-            notLoadedLable.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            notLoadedLable.Dock = DockStyle.Fill;
-            notLoadedLable.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            Controls.Add(notLoadedLable);
+            loadingLabel = new Label();
+            loadingLabel.Text = "Loading...";
+            loadingLabel.AutoSize = false;
+            loadingLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            loadingLabel.Dock = DockStyle.Fill;
+            loadingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            Controls.Add(loadingLabel);
 
             assetsTabControl = new TabControl();
             assetsTabControl.Dock = DockStyle.Fill;
@@ -44,27 +45,7 @@ namespace Hades_Map_Editor.Sections
         }
         public void Populate()
         {
-            AssetsManager assetsManager = AssetsManager.GetInstance();
-            Dictionary<string, Dictionary<AssetType, Dictionary<string, Asset>>> biomes = assetsManager.GetAssets();
-            if(biomes != null && biomes.Count != 0)
-            {
-                notLoadedLable.Visible = false;
-                foreach (var biome in biomes)
-                {
-                    if (biome.Value.ContainsKey(AssetType.Tilesets)) {
-                        AssetTab assetTab = new AssetTab();
-                        assetTab.Text = biome.Key;
-                        assetTab.LoadItems(biome.Value[AssetType.Tilesets].Values.ToList());
-
-                        assetsTabControl.Controls.Add(assetTab);
-                    }
-                }                
-            }
-            else
-            {
-                notLoadedLable.Visible = true;
-                notLoadedLable.Text = "Failed to load assets.";
-            }
+            GetData();
         }
         /*public void Select(int selectedId)
         {
@@ -78,5 +59,50 @@ namespace Hades_Map_Editor.Sections
                 elementManager.GetElement(selectedId).info.Active = value;
             }
         }*/
+        public void GetData()
+        {
+            //await Task.Factory.StartNew(() =>
+            //{
+                loadingLabel.Text = "Loading...";
+                loadingLabel.Visible = true;
+                //WRITING A FILE OR SOME SUCH THINGAMAGIG
+                Console.WriteLine("Start Assets");
+                AssetsManager assetsManager = AssetsManager.GetInstance();
+                Dictionary<string, Dictionary<AssetType, Dictionary<string, Asset>>> biomes = assetsManager.GetAssets();
+                if (biomes != null && biomes.Count != 0)
+                {
+                    int count = 0;
+                    foreach (var biome in biomes)
+                    {
+                        if (biome.Value.ContainsKey(AssetType.Tilesets))
+                        {
+                            AssetTab assetTab = new AssetTab();
+                            assetTab.Text = biome.Key;
+                            assetTab.LoadItems(biome.Value[AssetType.Tilesets].Values.ToList());
+
+                            assetsTabControl.Controls.Add(assetTab);
+                            count++;
+                        }
+                        if(count > 10)
+                        {
+                            break;
+                        }
+                    }
+                    loadingLabel.Visible = false;
+                }
+                else
+                {
+                    loadingLabel.Text = "No Assets detected. \n Try compiling.";
+                    loadingLabel.Visible = true;
+                }
+                Console.WriteLine("Loaded Assets");
+            //});
+        }
+
+        public void RefreshData()
+        {
+            assetsTabControl.TabPages.Clear();
+            GetData();
+        }
     }
 }

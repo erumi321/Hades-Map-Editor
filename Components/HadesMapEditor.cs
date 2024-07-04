@@ -1,4 +1,5 @@
 ﻿using Hades_Map_Editor.Components;
+using Hades_Map_Editor.Components.Dialogs;
 using Hades_Map_Editor.Data;
 using Hades_Map_Editor.Managers;
 using System;
@@ -21,6 +22,7 @@ namespace Hades_Map_Editor
         public TopMenuStrip topMenuStrip;
         public BottomMenuStrip bottomMenuStrip;
         public CustomTabControl tabPage;
+        public ParametersDialog parametersDialog;
 
         //AssetPanel assetPanel;
         //MapPanel mapPanel;
@@ -34,6 +36,7 @@ namespace Hades_Map_Editor
             tabPage = new CustomTabControl();
             topMenuStrip = new TopMenuStrip(this);
             bottomMenuStrip = new BottomMenuStrip();
+            parametersDialog = new ParametersDialog();
 
             ConfigManager configManager = ConfigManager.GetInstance();
             //configManager.SetConfig("ProjectPath", "", true);
@@ -51,7 +54,7 @@ namespace Hades_Map_Editor
 
             form.Controls.Add(tabPage);
             form.Controls.Add(topMenuStrip);
-            ////form.Controls.Add(bottomMenuStrip);
+            form.Controls.Add(bottomMenuStrip);
 
             //ProjectData projectData;
             SaveManager saveManager = SaveManager.GetInstance();
@@ -61,9 +64,9 @@ namespace Hades_Map_Editor
                 {
                     ProjectData projectData = saveManager.LoadProject(path);
                     tabPage.CreateNewTabPage(projectData);
-                }catch(Exception)
+                }catch(Exception e)
                 {
-
+                    Console.WriteLine(e.ToString());
                 }
             }           
         }

@@ -20,9 +20,9 @@ namespace Hades_Map_Editor.PropertiesSection
         public new void Initialize()
         {
             checkBox = new CheckBox();
-            checkBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            checkBox.Dock = DockStyle.Right;
-            Controls.Add(checkBox);
+            checkBox.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            checkBox.Dock = DockStyle.Top;
+            split.Panel2.Controls.Add(checkBox);
         }
         public new void Populate()
         {

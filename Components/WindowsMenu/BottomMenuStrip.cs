@@ -9,6 +9,7 @@ namespace Hades_Map_Editor.Components
 {
     public class BottomMenuStrip: StatusStrip, IComponent
     {
+        public ToolStripMenuItem statutsLabel, hadesVersion;
         public BottomMenuStrip()
         {
             Initialize();
@@ -17,17 +18,28 @@ namespace Hades_Map_Editor.Components
         public void Initialize()
         {
             Dock = DockStyle.Bottom;
-            ToolStripStatusLabel toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel()
+            statutsLabel = new System.Windows.Forms.ToolStripMenuItem()
             {
-                Name = "Biome",
-                Text = "Tartarus",
+                Name = "Statuts",
+                Text = "Idle",
             };
-            Items.Add(toolStripStatusLabel1);
+            statutsLabel.Dock = DockStyle.Right;
+            hadesVersion = new System.Windows.Forms.ToolStripMenuItem()
+            {
+                Name = "Version",
+                Text = "Hades",
+            };
+            Items.Add(statutsLabel);
+            Items.Add(hadesVersion);
         }
 
         public void Populate()
         {
 
+        }
+        public void SetStatuts(string newStatuts)
+        {
+            statutsLabel.Text = newStatuts;
         }
 
     }

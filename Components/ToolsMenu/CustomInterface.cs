@@ -12,6 +12,11 @@ namespace Hades_Map_Editor
         void Initialize();
         void Populate();
     }
+    public interface IDataFeed
+    {
+        Task GetData();
+        void RefreshData();
+    }
     public interface IPaging
     {
         void GoToPage(int numberPage);

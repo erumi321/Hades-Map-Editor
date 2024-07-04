@@ -62,9 +62,9 @@ namespace Hades_Map_Editor.Data
         public double Value { get; set; }
         private bool hidden;
         private Asset asset;
-        public double GetLayerLevel()
+        public int GetLayerLevel()
         {
-            return Id;
+            return SortIndex;
         }
         public bool GetAsset(out Asset asset)
         {

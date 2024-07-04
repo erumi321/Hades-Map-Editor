@@ -32,12 +32,6 @@ namespace Hades_Map_Editor.ElementsSection
 
         public void Populate()
         {
-            BeginUpdate();
-            foreach (var obstacle in projectData.mapData.GetActiveObstacles())
-            {
-                listBoxIndex.Add(Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
-            }
-            EndUpdate();
             SelectedIndexChanged += Action_SelectElement;
         }
         public void Action_SelectElement(object sender, EventArgs e)

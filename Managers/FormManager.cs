@@ -56,6 +56,14 @@ namespace Hades_Map_Editor.Managers
         {
             return form.tabPage.tabPages[form.tabPage.SelectedIndex];
         }
+        public TopMenuStrip GetTopMenu()
+        {
+            return form.topMenuStrip;
+        }
+        public BottomMenuStrip GetBottomMenu()
+        {
+            return form.bottomMenuStrip;
+        }
 
     }   
 }

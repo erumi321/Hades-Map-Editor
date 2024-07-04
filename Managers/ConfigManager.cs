@@ -14,7 +14,7 @@ namespace Hades_Map_Editor.Managers
     {
         private static ConfigManager _instance;
         private string configPath;
-        private ConfigData configs;
+        public ConfigData configs;
         public static ConfigManager GetInstance()
         {
             if (_instance == null)
@@ -44,6 +44,10 @@ namespace Hades_Map_Editor.Managers
             ConfigData newConfig = new ConfigData();
             SaveConfig(path, newConfig);
             return newConfig;
+        }
+        public void SaveConfig()
+        {
+            SaveConfig(configPath, configs);
         }
         private void SaveConfig(string path, ConfigData configs)
         {
@@ -77,13 +81,29 @@ namespace Hades_Map_Editor.Managers
             }
             return configs.HadesPath;
         }
-        public string GetResourcesPath()
+        public string GetResourcesPath(bool reset = false)
         {
-            if (configs.ResourcesPath == null)
+            if (configs.ResourcesPath == null || reset)
             {
                 configs.ResourcesPath = SetPath("Select your Temporary Resources Folder");
             }
             return configs.ResourcesPath;
+        }
+        public string GetPythonPath(bool reset = false)
+        {
+            if (configs.PythonPath == null || reset)
+            {
+                configs.PythonPath = SetPath("Select your Python Executable Folder");
+            }
+            return configs.PythonPath;
+        }
+        public string GetDefaultPath(bool reset = false)
+        {
+            if (reset)
+            {
+                configs.DefaultPath = SetPath("Select your Default Projects Folder");
+            }
+            return configs.DefaultPath;
         }
         public string GetProjectPath(int i)
         {
@@ -113,7 +133,6 @@ namespace Hades_Map_Editor.Managers
                     throw new NoFileLoadedException();
                 }
             }
-            SaveConfig(configPath, configs);
             return newPath;
         }
         public void SetProjectPath(string path)
@@ -144,6 +163,10 @@ namespace Hades_Map_Editor.Managers
             }
             SaveConfig(configPath, configs);
         }
+        public Dictionary<string, string> GetAllConfigs()
+        {
+            return GetAllConfigs();
+        }
     }
     public class ConfigData
     {
@@ -151,10 +174,21 @@ namespace Hades_Map_Editor.Managers
         public List<string> RecentProjects;
         public string HadesPath;
         public string ResourcesPath;
+        public string PythonPath;
+        public string DefaultPath;
         public ConfigData()
         {
             OpenProjects = new List<string>();
             RecentProjects = new List<string>();
+        }
+        public Dictionary<string, string> GetAllConfigs()
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            result["HadesPath"] = HadesPath;
+            result["ResourcesPath"] = ResourcesPath;
+            result["PythonPath"] = PythonPath;
+            result["DefaultPath"] = DefaultPath;
+            return result;
         }
     }
 }

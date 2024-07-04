@@ -15,6 +15,19 @@ namespace Hades_Map_Editor.Data
         {
             biomes = new Dictionary<string, Dictionary<AssetType, Dictionary<string, Asset>>>();
         }
+        public void LoadImages()
+        {
+            foreach (var biome in biomes)
+            {
+                foreach (var type in biome.Value)
+                {
+                    foreach (var asset in type.Value)
+                    {
+                        asset.Value.LoadImage();
+                    }
+                }
+            }
+        }
     }
     public class Asset
     {
@@ -37,7 +50,7 @@ namespace Hades_Map_Editor.Data
         {
             ConfigManager configManager = ConfigManager.GetInstance();            
             biome = parent.name.Split('\\').Last().Split('_').First();
-            assetpath = configManager.GetResourcesPath() + biome + @"\textures\atlases\" + parent.GetName() + ".png";
+            assetpath = configManager.GetResourcesPath() + @"\" + biome + @"\textures\atlases\" + parent.GetName() + ".png";
             name = json.name.Split('\\').Last().Replace("_", "");
             rect = json.rect;
             topLeft = json.topLeft;
@@ -49,12 +62,13 @@ namespace Hades_Map_Editor.Data
             hull = json.hull;
             Enum.TryParse(json.name.Split('\\').First(), out AssetType myType);
             type = myType;
+            //image = Utility.LoadImage(assetpath, rect);
         }
         public Image GetImage(double scale = -1, double height = -1)
         {
             if (image == null)
             {
-               image = Utility.LoadImage(assetpath, rect);
+                image = LoadImage();
             }
             if(height != -1)
             {
@@ -64,7 +78,15 @@ namespace Hades_Map_Editor.Data
             {
                 return Utility.ResizeImage(image, (int)(rect.width * scale * scaleRatio.x), (int)(rect.height * scale * scaleRatio.y));
             }
-            return new Bitmap(image);
+            return image;
+        }
+        public Image LoadImage()
+        {
+            if (image == null)
+            {
+                return Utility.LoadImage(assetpath, rect);
+            }
+            throw new Exception("Couldn't load image");
         }
     }
     public enum AssetType

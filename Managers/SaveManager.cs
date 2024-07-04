@@ -39,6 +39,7 @@ namespace Hades_Map_Editor.Managers
             {
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog
                 {
+                    InitialDirectory = @"C:\Users\Alexandre-i5\source\repos\Hades Map Helper\test_data\sample\",
                     Title = "Browse Map Texts",
 
                     CheckFileExists = true,
@@ -68,6 +69,7 @@ namespace Hades_Map_Editor.Managers
             {
                 OpenFileDialog openFileDialog1 = new OpenFileDialog
                 {
+                    InitialDirectory = @"C:\Users\Alexandre-i5\source\repos\Hades Map Helper\test_data\sample\",
                     Title = "Browse Map Texts",
 
                     CheckFileExists = true,
@@ -163,6 +165,7 @@ namespace Hades_Map_Editor.Managers
                     string json = r.ReadToEnd();
                     assets = JsonConvert.DeserializeObject<Assets>(json);
                 }
+                //assets.LoadImages();
             }
             else
             {
@@ -173,12 +176,14 @@ namespace Hades_Map_Editor.Managers
         private string OpenFile(
             string title = "Browse Files",
             string defaultExt = "hades_map",
-            string filter = "map texts (*.hades_map)|*.hades_map"
+            string filter = "map texts (*.hades_map)|*.hades_map",
+            string initialDirectory = @"C:\Users\Alexandre-i5\source\repos\Hades Map Helper\test_data\sample\"    
             )
         {
             string path = "";
             OpenFileDialog openFileDialog1 = new OpenFileDialog
             {
+                InitialDirectory = initialDirectory,
                 Title = title,
 
                 CheckFileExists = true,

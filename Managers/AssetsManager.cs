@@ -19,6 +19,7 @@ namespace Hades_Map_Editor.Managers
     {
         private Assets assets;
         private static AssetsManager _instance;
+        private bool processOngoing;
         public static AssetsManager GetInstance()
         {
             if (_instance == null)
@@ -36,7 +37,7 @@ namespace Hades_Map_Editor.Managers
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                assets = CompileAssets();
+                assets = new Assets();
             }
         }
         public Dictionary<string, Dictionary<AssetType, Dictionary<string, Asset>>> GetAssets()
@@ -47,55 +48,46 @@ namespace Hades_Map_Editor.Managers
         {
             return new List<string>(assets.biomes.Keys);
         }
-        public Assets CompileAssets()
+        public async Task CompileAssets()
         {
-            Assets assets = new Assets();
-            ConfigManager configManager = ConfigManager.GetInstance();
-            Console.WriteLine("Start Compilation");
-            var directories = Directory.GetDirectories(configManager.GetResourcesPath());
-            foreach (var fulldirectory in directories)
+            processOngoing = true;
+            var task = Task.Factory.StartNew(() =>
             {
-                string directory = Path.GetFileName(fulldirectory);
-                Dictionary<AssetType, Dictionary<string, Asset>> biomeAssets = new Dictionary<AssetType, Dictionary<string,Asset>>();
-                assets.biomes.Add(directory, biomeAssets);
-                var assetFiles = Directory.GetFiles(fulldirectory + @"\manifest");
-                foreach (var assetFile in assetFiles)
+                FormManager formManager = FormManager.GetInstance();
+                formManager.GetBottomMenu().SetStatuts("Compiling assets...");
+                Assets assets = new Assets();
+                ConfigManager configManager = ConfigManager.GetInstance();
+                Console.WriteLine("Start Compilation");
+                var directories = Directory.GetDirectories(configManager.GetResourcesPath());
+                foreach (var fulldirectory in directories)
                 {
-                    using (StreamReader r = new StreamReader(assetFile))
+                    string directory = Path.GetFileName(fulldirectory);
+                    Dictionary<AssetType, Dictionary<string, Asset>> biomeAssets = new Dictionary<AssetType, Dictionary<string, Asset>>();
+                    assets.biomes.Add(directory, biomeAssets);
+                    var assetFiles = Directory.GetFiles(fulldirectory + @"\manifest");
+                    foreach (var assetFile in assetFiles)
                     {
-                        string json = r.ReadToEnd();
-                        var asset = JsonConvert.DeserializeObject<RawAtlasJson>(json);
-                        asset.AppendAssets(biomeAssets);
+                        using (StreamReader r = new StreamReader(assetFile))
+                        {
+                            string json = r.ReadToEnd();
+                            var asset = JsonConvert.DeserializeObject<RawAtlasJson>(json);
+                            asset.AppendAssets(biomeAssets);
+                            formManager.GetBottomMenu().SetStatuts(asset.name);
+                        }
                     }
                 }
-            }
-            Console.WriteLine("End Compilation");
-            SaveManager saveManager = SaveManager.GetInstance();
-            saveManager.SaveAssets(assets);
-            Console.WriteLine("Saved Compilation");
-            return assets;
+                SaveManager saveManager = SaveManager.GetInstance();
+                saveManager.SaveAssets(assets);
+                this.assets = assets;
+                processOngoing = false;
+                formManager.GetBottomMenu().SetStatuts("Compiling - done");
+            });
+            await task;
         }
-        public void CreateAsset()
+        public void LoadImages()
         {
-
+            assets.LoadImages();
         }
-        /*public void InitAssets()
-        {
-            Console.WriteLine("Start Assets");
-            var assetFiles = Directory.GetFiles(assetPath + @"Tartarus\manifest");
-            foreach (var assetFile in assetFiles)
-            {
-                using (StreamReader r = new StreamReader(assetFile))
-                {
-                    string json = r.ReadToEnd();
-                    var asset = JsonConvert.DeserializeObject<RawAtlasJson>(json);
-                    Console.WriteLine("Loading:" + asset.GetName());
-                    asset.AppendAssets(assets);
-                    //break;
-                }
-            }
-            Console.WriteLine("End Assets");
-        }*/
         public bool GetAsset(string id, out Asset asset)
         {
             foreach(var biome in assets.biomes)
@@ -112,25 +104,36 @@ namespace Hades_Map_Editor.Managers
             asset = null;
             return false;
         }
-        public void FetchAssetsFromGame()
+        public async void FetchAssetsFromGameAsync()
         {
             try
             {
+                processOngoing = true;
+                FormManager formManager = FormManager.GetInstance();
+                formManager.GetBottomMenu().SetStatuts("Fetch assets...");
                 ConfigManager configManager = ConfigManager.GetInstance();
-
-                _ = RunProcessAsync("Tartarus",configManager.GetHadesPath(), configManager.GetResourcesPath());
-                _ = RunProcessAsync("Erebus", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                _ = RunProcessAsync("Asphodel", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                _ = RunProcessAsync("Elysium", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                _ = RunProcessAsync("Surface", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                _ = RunProcessAsync("Styx", configManager.GetHadesPath(), configManager.GetResourcesPath());
+                List<Task> tasks = new List<Task>();
+                tasks.Add(RunProcessAsync(configManager.GetPythonPath(), "Tartarus",configManager.GetHadesPath(), configManager.GetResourcesPath()));
+                //_ = RunProcessAsync(configManager.GetPythonPath(), "Erebus", configManager.GetHadesPath(), configManager.GetResourcesPath());
+                //_ = RunProcessAsync(configManager.GetPythonPath(), "Asphodel", configManager.GetHadesPath(), configManager.GetResourcesPath());
+                //_ = RunProcessAsync(configManager.GetPythonPath(), "Elysium", configManager.GetHadesPath(), configManager.GetResourcesPath());
+                //_ = RunProcessAsync(configManager.GetPythonPath(), "Surface", configManager.GetHadesPath(), configManager.GetResourcesPath());
+                //_ = RunProcessAsync(configManager.GetPythonPath(), "Styx", configManager.GetHadesPath(), configManager.GetResourcesPath());
+                
+                Task task =  Task.WhenAll(tasks);
+                await task.ContinueWith(allTask =>
+                {
+                    formManager.GetBottomMenu().SetStatuts("Fetch assets - done");
+                    Console.WriteLine("Finished!");
+                    processOngoing = false;
+                });
             }
             catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 
         }
 
         
-static async Task<int> RunProcessAsync(string packageName, string hadesPath, string resourcesPath)
+        private async Task<int> RunProcessAsync(string pythonPath, string packageName, string hadesPath, string resourcesPath)
         {
             if (!Directory.Exists(resourcesPath + @"\"+packageName))
             {
@@ -138,21 +141,20 @@ static async Task<int> RunProcessAsync(string packageName, string hadesPath, str
             }
             else
             {
-                Directory.Delete(resourcesPath + @"\" + packageName);
+                Directory.Delete(resourcesPath + @"\" + packageName, true);
                 Directory.CreateDirectory(resourcesPath + @"\" + packageName);
             }
             var tcs = new TaskCompletionSource<int>();
             var process = new Process
             {
                 StartInfo = {
-                    FileName = @"C:\Users\Alexandre-i5\AppData\Local\Microsoft\WindowsApps\python.exe",
+                    FileName = pythonPath+@"\python.exe",
                     Arguments = string.Format("{0} {1} {2} {3}", "\"" + System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\Python\\extract.py\"", "\""+packageName+"\"", "\""+hadesPath+"\"", "\""+resourcesPath+"\""),
                     UseShellExecute = false,
                     RedirectStandardOutput = true
                 },
                 EnableRaisingEvents = true
             };
-
             process.Exited += (sender, args) =>
             {
                 tcs.SetResult(process.ExitCode);

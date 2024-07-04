@@ -147,6 +147,21 @@
     <Compile Include="Components\WindowsMenu\BottomMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\WindowsMenu\Parameters\ConfigurationLink.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\Parameters\GeneralTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\Parameters\ParametersDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\Parameters\ParametersTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\Parameters\PathsTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\WindowsMenu\TopMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -230,6 +245,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Python\extract.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Res\browse_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Res\save_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

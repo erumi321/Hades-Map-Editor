@@ -38,7 +38,7 @@ namespace Hades_Map_Editor.Sections
         {
             BackColor = System.Drawing.Color.Blue;
             AutoScroll = true;
-            AutoSize = true;
+            //AutoSize = true;
             Dock = DockStyle.Fill;
 
             noSelectionLable = new Label();
@@ -50,8 +50,10 @@ namespace Hades_Map_Editor.Sections
             
 
             attributePanel = new TableLayoutPanel();
+            attributePanel.AutoScroll = true;
             //attributePanel.Size = new System.Drawing.Size(280,500);
-            attributePanel.AutoSize = true;
+            //attributePanel.AutoSize = true;
+            attributePanel.Dock = DockStyle.Fill;
             attributePanel.BackColor = System.Drawing.Color.Red;
             attributePanel.Visible = true;
 
@@ -143,7 +145,7 @@ namespace Hades_Map_Editor.Sections
         public void UnFocus()
         {
             noSelectionLable.Visible = true;
-            //attributePanel.Visible = false;
+            attributePanel.Visible = false;
         }
         public void FocusOn(Obstacle obstacle)
         {
@@ -182,7 +184,14 @@ namespace Hades_Map_Editor.Sections
             skewAngle.Update(currentObstacle.SkewAngle);
             skewScale.Update(currentObstacle.SkewScale);
             sortIndex.Update(currentObstacle.SortIndex);
-            stopsLight.Update((bool)currentObstacle.StopsLight);
+            if(currentObstacle.StopsLight == null)
+            {
+                stopsLight.Update(false);
+            }
+            else
+            {
+                stopsLight.Update((bool)currentObstacle.StopsLight);
+            }
             tallness.Update(currentObstacle.Tallness);
             useBoundsForSortArea.Update(currentObstacle.UseBoundsForSortArea);
             value.Update(currentObstacle.Value);

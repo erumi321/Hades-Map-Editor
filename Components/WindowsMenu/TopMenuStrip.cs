@@ -13,13 +13,14 @@ namespace Hades_Map_Editor.Components
     {
         public ToolStripMenuItem 
             filesMenu, filesSubNew, filesNewAction, filesOpenProjectAction, filesOpenMapAction, filesSubRecent,
+                filesParameters,
             editMenu, assetUndoAction, assetRedoAction, assetCutAction, assetCopyAction, assetPasteAction, 
                 assetDeleteAction, assetPreferencesAction,
-            viewMenu, 
+            viewMenu, refreshTabsAction,
             assetMenu, assetCompileAction, assetFetchAction, assetSubBiomes,
             mapMenu, 
             helpMenu;
-    HadesMapEditor app;
+        HadesMapEditor app;
         public List<ToolStripMenuItem> filesRecentAction, assetSubBiomesAction;
         public TopMenuStrip(HadesMapEditor app)
         {
@@ -59,6 +60,7 @@ namespace Hades_Map_Editor.Components
             filesOpenMapAction.Click += (s, e) => Action_OpenMap(s, e);
             assetFetchAction.Click += (s, e) => Action_FetchAssets(s, e);
             assetCompileAction.Click += (s, e) => Action_CompileResources(s, e);
+            filesParameters.Click += (s, e) => Action_OpenParameters(s, e);
         }
 
         private void CreateMainMenuNew()
@@ -76,6 +78,7 @@ namespace Hades_Map_Editor.Components
             filesOpenMapAction = new ToolStripMenuItem("Open .map_text");
             filesSubRecent = new ToolStripMenuItem("Recent Maps");
             filesRecentAction = new List<ToolStripMenuItem>();
+            filesParameters = new ToolStripMenuItem("Parameters");
             filesSubNew.DropDownItems.Add(filesNewAction);
             filesMenu.DropDownItems.Add(filesSubNew);
             filesMenu.DropDownItems.Add(filesOpenProjectAction);
@@ -87,6 +90,7 @@ namespace Hades_Map_Editor.Components
                 filesSubRecent.DropDownItems.Add(recentAction);
             }
             filesMenu.DropDownItems.Add(filesSubRecent);
+            filesMenu.DropDownItems.Add(filesParameters);
 
             // Save feature (Save, As, All)
 
@@ -125,6 +129,8 @@ namespace Hades_Map_Editor.Components
         private void CreateMainMenuView()
         {
             viewMenu = new ToolStripMenuItem("View");
+            refreshTabsAction = new ToolStripMenuItem("Refresh Tabs");
+            viewMenu.DropDownItems.Add(refreshTabsAction);
         }
         private void CreateMainMenuAssets()
         {
@@ -182,7 +188,7 @@ namespace Hades_Map_Editor.Components
             AssetsManager assetsManager = AssetsManager.GetInstance();
             try
             {
-                assetsManager.FetchAssetsFromGame();
+                assetsManager.FetchAssetsFromGameAsync();
             }
             catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 
@@ -191,14 +197,31 @@ namespace Hades_Map_Editor.Components
         private void Action_CompileResources(object sender, EventArgs e)
         {
             AssetsManager assetsManager = AssetsManager.GetInstance();
+            FormManager formManager = FormManager.GetInstance();
             try
             {
-                assetsManager.CompileAssets();
+                Task compileTask = assetsManager.CompileAssets();
+                compileTask.ContinueWith(task =>
+                {
+                    formManager.GetAssetsPanel().RefreshData();
+                    formManager.GetElementsPanel().RefreshData();
+                });
                 //FormManager.GetInstance().GetAssetsPanel().Refresh();
             }
             catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 
             //app.tabPageController.CreateNewTabPage(app.form, "New file");
+        }
+        private void Action_RefreshCurrentTab(object sender, EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+            
+            formManager.GetAssetsPanel().RefreshData();
+            formManager.GetElementsPanel().RefreshData();
+        }
+        private void Action_OpenParameters(object sender, System.EventArgs e)
+        {
+            app.parametersDialog.OpenDialog();
         }
     }
 }

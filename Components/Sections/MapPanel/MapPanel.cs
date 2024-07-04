@@ -15,6 +15,8 @@ namespace Hades_Map_Editor.Sections
     {
         private MapCanvas canvas;
         private ProjectData data;
+        private MenuStrip topMenu;
+        private ToolStripMenuItem zoomIn, zoomOut;
         public MapPanel(ProjectData data)
         {
             this.data = data;
@@ -26,14 +28,28 @@ namespace Hades_Map_Editor.Sections
         public void Initialize()
         {
             BackColor = System.Drawing.Color.BlueViolet;
-            AutoScroll = true;
+            AutoScroll = false;
             Dock = DockStyle.Fill;
             BorderStyle = BorderStyle.FixedSingle;
             SetAutoScrollMargin(0, 50);
 
-            canvas = new MapCanvas();
+            zoomIn = new ToolStripMenuItem();
+            zoomIn.Text = "+";
+            zoomIn.Click += (s, e) => MapPanel_ZoomIn_Click(s, e);
 
+            zoomOut = new ToolStripMenuItem();
+            zoomOut.Text = "-";
+            zoomOut.Click += (s, e) => MapPanel_ZoomOut_Click(s, e);
+
+            topMenu = new MenuStrip();
+            topMenu.Dock = DockStyle.Top;
+            topMenu.Items.Add(zoomIn);
+            topMenu.Items.Add(zoomOut);
+            Controls.Add(topMenu);
+
+            canvas = new MapCanvas();
             Controls.Add(canvas);
+
             /*canvas.MouseClick += new MouseEventHandler((o, e) => {
                 MouseEventArgs me = (MouseEventArgs)e;
                 System.Drawing.Point coordinates = me.Location;
@@ -68,15 +84,7 @@ namespace Hades_Map_Editor.Sections
 
         public void Populate()
         {
-            AssetsManager assetsManager = AssetsManager.GetInstance();
-            foreach (Obstacle obs in data.mapData.Obstacles)
-            {
-                Asset asset;
-                if(assetsManager.GetAsset(obs.Name,out asset)){
-                    canvas.AddItem(obs);
-                }
-            }
-            canvas.MapRefresh();
+            RefreshData();
         }
         public void UnFocus()
         {
@@ -88,9 +96,53 @@ namespace Hades_Map_Editor.Sections
 
             // Adjust scrollbar
             Size offset = canvas.GetOffset();
-            VerticalScroll.Value = Math.Max(Math.Min((int)obs.Location.X - offset.Width,VerticalScroll.Maximum),0);
-            HorizontalScroll.Value = Math.Max(Math.Min((int)obs.Location.Y - offset.Height, HorizontalScroll.Maximum), 0);
-            PerformLayout();
+            
+            if(obs.HasAsset())
+            {
+                canvas.VerticalScroll.Value = Math.Max(Math.Min((int)obs.Location.X - offset.Width, VerticalScroll.Maximum), 0);
+                canvas.HorizontalScroll.Value = Math.Max(Math.Min((int)obs.Location.Y - offset.Height, HorizontalScroll.Maximum), 0);
+                canvas.SetSelect(obs);
+                //PerformLayout();
+            }
+            else
+            {
+                canvas.UnsetSelect();
+            }
+            canvas.Refresh();
+        }
+
+        public void GetData()
+        {
+                AssetsManager assetsManager = AssetsManager.GetInstance();
+                foreach (Obstacle obs in data.mapData.Obstacles)
+                {
+                    Asset asset;
+                    if (assetsManager.GetAsset(obs.Name, out asset))
+                    {
+                        canvas.AddItem(obs);
+                    }
+                }
+        }
+
+        public void RefreshData()
+        {
+            GetData();
+            canvas.MapRefresh();
+        }
+        // Actions
+        private void MapPanel_ZoomIn_Click(object sender, EventArgs e)
+        {
+            canvas.ZoomIn();
+            zoomIn.Enabled = canvas.CanZoomIn();
+            zoomOut.Enabled = canvas.CanZoomOut();
+            Console.WriteLine("Zoom In Clicked");
+        }
+        private void MapPanel_ZoomOut_Click(object sender, EventArgs e)
+        {
+            canvas.ZoomOut();
+            zoomIn.Enabled = canvas.CanZoomIn();
+            zoomOut.Enabled = canvas.CanZoomOut();
+            Console.WriteLine("Zoom Out Clicked");
         }
     }
 }

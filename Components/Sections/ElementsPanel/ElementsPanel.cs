@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Hades_Map_Editor.Sections
 {
-    public class ElementsPanel : Panel, IComponent
+    public class ElementsPanel : Panel, IComponent, IDataFeed
     {
         ProjectData data;
         public ElementsList listBox;
@@ -31,6 +31,28 @@ namespace Hades_Map_Editor.Sections
 
         public void Populate()
         {
-        }        
+            _ = GetData();
+        }
+
+        public async Task GetData()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                //WRITING A FILE OR SOME SUCH THINGAMAGIG
+                listBox.BeginUpdate();
+                foreach (var obstacle in data.mapData.GetActiveObstacles())
+                {
+                    listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
+                }
+                listBox.EndUpdate();
+                Console.WriteLine("Loaded Elements");
+            });
+        }
+
+        public void RefreshData()
+        {
+            listBox.Items.Clear();
+            _ = GetData();
+        }
     }
 }

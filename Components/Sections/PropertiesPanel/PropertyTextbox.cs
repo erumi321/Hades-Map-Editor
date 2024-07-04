@@ -23,7 +23,8 @@ namespace Hades_Map_Editor.PropertiesSection
             textBox = new TextBox();
             textBox.Dock = DockStyle.Right;
             Leave += new EventHandler(Property_Leave);
-            Controls.Add(textBox);
+            split.Panel2.Controls.Add(textBox);
+            //Controls.Add(textBox);
 
             //BorderStyle = BorderStyle.FixedSingle;
             //SetAutoScrollMargin(0, 0);
