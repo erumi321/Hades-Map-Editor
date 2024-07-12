@@ -23,6 +23,7 @@ namespace Hades_Map_Editor
         public BottomMenuStrip bottomMenuStrip;
         public CustomTabControl tabPage;
         public ParametersDialog parametersDialog;
+        public ParametersDialog metadataDialog;
 
         //AssetPanel assetPanel;
         //MapPanel mapPanel;

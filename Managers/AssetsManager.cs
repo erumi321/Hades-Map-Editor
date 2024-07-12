@@ -61,10 +61,15 @@ namespace Hades_Map_Editor.Managers
                 var directories = Directory.GetDirectories(configManager.GetResourcesPath());
                 foreach (var fulldirectory in directories)
                 {
+                    string manifestPath = fulldirectory +@"\manifest";
+                    if (!File.Exists(manifestPath))
+                    {
+                        continue;
+                    }
                     string directory = Path.GetFileName(fulldirectory);
                     Dictionary<AssetType, Dictionary<string, Asset>> biomeAssets = new Dictionary<AssetType, Dictionary<string, Asset>>();
                     assets.biomes.Add(directory, biomeAssets);
-                    var assetFiles = Directory.GetFiles(fulldirectory + @"\manifest");
+                    var assetFiles = Directory.GetFiles(manifestPath);
                     foreach (var assetFile in assetFiles)
                     {
                         using (StreamReader r = new StreamReader(assetFile))

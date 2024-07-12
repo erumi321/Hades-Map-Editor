@@ -1,0 +1,76 @@
+﻿using Hades_Map_Editor.Managers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Hades_Map_Editor.Components
+{
+    public class MapMenuItem : ToolStripMenuItem, IComponent
+    {
+        public ToolStripMenuItem
+            refreshMap, loadMapText, metadataView;
+        HadesMapEditor app;
+        public MapMenuItem(HadesMapEditor app) : base("Map")
+        {
+            this.app = app;
+            Initialize();
+            Populate();
+            Dock = DockStyle.Top;
+        }
+        public void Initialize()
+        {
+            ConfigManager configManager = ConfigManager.GetInstance();
+            ((ToolStripDropDownMenu)(DropDown)).ShowImageMargin = true;
+            ((ToolStripDropDownMenu)(DropDown)).ShowCheckMargin = false;
+
+            refreshMap = new ToolStripMenuItem("Refresh Map");
+            loadMapText = new ToolStripMenuItem("Load .map_text");
+            metadataView = new ToolStripMenuItem("Open Map Metadata");
+
+            DropDownItems.Add(refreshMap);
+            DropDownItems.Add(new ToolStripSeparator());
+            DropDownItems.Add(loadMapText);
+            DropDownItems.Add(metadataView);
+        }
+
+        public void Populate()
+        {
+            DropDownOpening += Self_Open;
+            refreshMap.Click += RefreshMap_Action;
+            refreshMap.Enabled = false;
+            loadMapText.Click += LoadMapText_Action;
+            loadMapText.Enabled = false;
+            metadataView.Click += MetadataView_Action;
+            metadataView.Enabled = false;
+        }
+
+        private void MetadataView_Action(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LoadMapText_Action(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void RefreshMap_Action(object sender, EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+            formManager.GetAssetsPanel().RefreshData();
+            formManager.GetElementsPanel().RefreshData();
+        }
+        private void Self_Open(object sender, EventArgs e)
+        {
+            Console.WriteLine("Map Clicked");
+            FormManager formManager = FormManager.GetInstance();
+            bool hasMapOpen = formManager.HasTabOpen();
+            refreshMap.Enabled = hasMapOpen;
+            //loadMapText.Enabled = hasMapOpen;
+            //metadataView.Enabled = hasMapOpen;
+        }
+    }
+}

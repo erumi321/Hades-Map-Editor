@@ -19,7 +19,7 @@ namespace Hades_Map_Editor.MapSection
         Obstacle selected;
         Image currentImage;
         Rectangle selectRect;
-        Panel canvas, backgroundCanvas, overlayCanvas;
+        Panel canvas;
         public MapCanvas()
         {
             listOfLoadedAssets = new List<Obstacle>();

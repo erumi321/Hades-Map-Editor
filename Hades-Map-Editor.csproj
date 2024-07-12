@@ -162,7 +162,25 @@
     <Compile Include="Components\WindowsMenu\Parameters\PathsTab.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\WindowsMenu\TopMenuStrip.cs">
+    <Compile Include="Components\WindowsMenu\TopMenu\HelpMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\TopMenu\MapMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\TopMenu\AssetsMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\TopMenu\ViewMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\TopMenu\EditMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\TopMenu\FilesMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\TopMenu\TopMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Data\Assets.cs" />
