@@ -24,7 +24,7 @@ namespace Hades_Map_Editor
     }
     public interface Focusable
     {
-        void FocusOn(Obstacle obs);
+        void FocusOn(int id);
         void UnFocus();
     }
 }

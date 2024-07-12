@@ -56,9 +56,13 @@ namespace Hades_Map_Editor.Components.Dialogs
             pathTextbox.TextChanged += (s, e) => Change_TextBox(s, e);
             // Nothing
         }
-        public void SetNewPath(string path)
+        public void SetText(string path)
         {
             pathTextbox.Text = path;
+        }
+        public string GetText()
+        {
+            return pathTextbox.Text;
         }
         private void Change_TextBox(object sender, EventArgs e)
         {

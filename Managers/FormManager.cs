@@ -51,7 +51,10 @@ namespace Hades_Map_Editor.Managers
         {
             return GetCurrentTab().assetsPanel;
         }
-        
+        public bool HasTabOpen()
+        {
+            return form.tabPage.tabPages.Count > 0;
+        }
         public CustomTabPage GetCurrentTab()
         {
             return form.tabPage.tabPages[form.tabPage.SelectedIndex];

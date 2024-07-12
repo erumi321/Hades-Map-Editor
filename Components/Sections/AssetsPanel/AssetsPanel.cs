@@ -16,12 +16,13 @@ namespace Hades_Map_Editor.Sections
         private Label loadingLabel;
         public Dictionary<string, AssetTab> assetsTab;
         public TabControl assetsTabControl;
+        private ProjectData data;
 
-        public AssetsPanel()
+        public AssetsPanel(ProjectData data)
         {
+            this.data = data;
             Initialize();
             Populate();
-            //properties = new ThingTextProperties(this, panel);
         }
         public void Initialize()
         {
@@ -40,12 +41,17 @@ namespace Hades_Map_Editor.Sections
             assetsTabControl = new TabControl();
             assetsTabControl.Dock = DockStyle.Fill;
             Controls.Add(assetsTabControl);
+            
             //BorderStyle = BorderStyle.FixedSingle;
             //SetAutoScrollMargin(0, 0);
         }
         public void Populate()
         {
             GetData();
+        }
+        public AssetTab GetCurrentTab()
+        {
+            return assetsTabControl.SelectedTab as AssetTab;
         }
         /*public void Select(int selectedId)
         {

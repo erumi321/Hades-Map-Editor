@@ -1,12 +1,14 @@
 ﻿using Hades_Map_Editor.Data;
 using Newtonsoft.Json;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 
 namespace Hades_Map_Editor.Managers
 {
@@ -14,7 +16,8 @@ namespace Hades_Map_Editor.Managers
     {
         private static ConfigManager _instance;
         private string configPath;
-        public ConfigData configs;
+        public Dictionary<ConfigType, ConfigData> configs;
+        List<ProjectPath> projectList;
         public static ConfigManager GetInstance()
         {
             if (_instance == null)
@@ -25,105 +28,98 @@ namespace Hades_Map_Editor.Managers
         }
         private ConfigManager() {
             configPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\config.json";
-            configs = LoadConfig(configPath);
-            CreateResourcesFolder();
+            LoadConfig();
         }
-        private ConfigData LoadConfig(string path)
+        private void LoadConfig(bool reset = false)
         {
-            if(File.Exists(path)){
-                string text = File.ReadAllText(path);
-                return JsonConvert.DeserializeObject<ConfigData>(text);
+            ConfigFile configFile;
+            bool newConfig;
+            if (!File.Exists(configPath) || reset)
+            {
+                newConfig = true;
+                configFile = new ConfigFile();
             }
             else
             {
-                return CreateConfig(path);
+                newConfig = false;
+                string text = File.ReadAllText(configPath);
+                configFile = JsonConvert.DeserializeObject<ConfigFile>(text);
+            }
+            CreateConfig(configFile);
+            if (newConfig)
+            {
+                SaveConfig();
             }
         }
-        private ConfigData CreateConfig(string path)
+        private void CreateConfig(ConfigFile configFile)
         {
-            ConfigData newConfig = new ConfigData();
-            SaveConfig(path, newConfig);
-            return newConfig;
+            configs = new Dictionary<ConfigType, ConfigData>();
+            string defaultFolder = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            bool hasHadesPath = configFile.TryGetValue(ConfigType.HadesPath, out var hadesPath);
+            configs.Add(ConfigType.HadesPath, new ConfigData(ConfigType.HadesPath, defaultFolder, @"Select your Hades Game Folder, I.e: C:\Hades", (hasHadesPath) ? hadesPath : ""));
+            bool hasResourcesPath = configFile.TryGetValue(ConfigType.ResourcesPath, out var resourcesPath);
+            configs.Add(ConfigType.ResourcesPath, new ConfigData(ConfigType.ResourcesPath, defaultFolder, @"Select your Temporary Resources Folder, I.e: C:\...\Documents\Resources", (hasResourcesPath) ? resourcesPath : ""));
+            bool hasProjectPath = configFile.TryGetValue(ConfigType.ProjectPath, out var projectPath);
+            configs.Add(ConfigType.ProjectPath, new ConfigData(ConfigType.ProjectPath, defaultFolder, @"Select your Default Projects Folder, I.e: C:\...\Documents\Projects", (hasProjectPath) ? projectPath : ""));
+            bool hasPythonPath = configFile.TryGetValue(ConfigType.PythonPath, out var pythonPath);
+            configs.Add(ConfigType.PythonPath, new ConfigData(ConfigType.PythonPath, defaultFolder, @"Select your Python Executable Folder, I.e: C:\...\AppData\Local\Microsoft\WindowsApps", (hasPythonPath) ? pythonPath : ""));
+            projectList = configFile.projectList;
         }
-        public void SaveConfig()
+        public void ChangeConfig(Dictionary<ConfigType, string> configFile)
         {
-            SaveConfig(configPath, configs);
-        }
-        private void SaveConfig(string path, ConfigData configs)
-        {
-            using (StreamWriter file = new StreamWriter(path))
+            foreach (var config in configFile)
             {
-                string json = JsonConvert.SerializeObject(configs);
+                configs[config.Key].SetPath(config.Value);
+            }
+            SaveConfig();
+        }
+        private void SaveConfig()
+        {
+            ConfigFile content = new ConfigFile(configs, projectList);
+            using (StreamWriter file = new StreamWriter(configPath))
+            {
+                string json = JsonConvert.SerializeObject(content);
                 file.Write(json);
             }
         }
-        // Variable
-        public void CreateResourcesFolder()
+        public bool HasPath(ConfigType type)
         {
-            configs.ResourcesPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\Resources";
-            if (!Directory.Exists(configs.ResourcesPath))
-            {
-                Directory.CreateDirectory(configs.ResourcesPath);
-            }           
+            return configs[type].HasPath();
         }
-        public string GetHadesPath(bool reset = false)
+        public string GetPath(ConfigType type)
         {
-            if (configs.HadesPath == null || reset)
-            {
-                try
-                {
-                    configs.HadesPath = SetPath("Select your Hades Game Folder");
-                }
-                catch (Exception)
-                {
-                    return "";
-                }
-            }
-            return configs.HadesPath;
+            return configs[type].GetPath();
         }
-        public string GetResourcesPath(bool reset = false)
-        {
-            if (configs.ResourcesPath == null || reset)
-            {
-                configs.ResourcesPath = SetPath("Select your Temporary Resources Folder");
-            }
-            return configs.ResourcesPath;
-        }
-        public string GetPythonPath(bool reset = false)
-        {
-            if (configs.PythonPath == null || reset)
-            {
-                configs.PythonPath = SetPath("Select your Python Executable Folder");
-            }
-            return configs.PythonPath;
-        }
-        public string GetDefaultPath(bool reset = false)
-        {
-            if (reset)
-            {
-                configs.DefaultPath = SetPath("Select your Default Projects Folder");
-            }
-            return configs.DefaultPath;
-        }
-        public string GetProjectPath(int i)
-        {
-            return configs.OpenProjects[i];
-        }
-        public List<string> GetAllProjectPath()
-        {
-            return configs.OpenProjects;
-        }
-        public List<string> GetRecentPath()
-        {
-            return configs.RecentProjects;
-        }
-        public string SetPath(string description = null)
+        public string FetchPath(string description, string selectedPath)
         {
             string newPath = "";
             FolderBrowserDialog openFileDialog1 = new FolderBrowserDialog { };
-            if(description != null)
+            openFileDialog1.SelectedPath = (selectedPath == "") ? configs[ConfigType.ProjectPath].GetPath() : selectedPath;
+            openFileDialog1.Description = (description == "") ? "Get a Folder Directory": description;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                openFileDialog1.Description = description;
+                newPath = openFileDialog1.SelectedPath;
+                if (newPath == "") // Didn't load
+                {
+                    throw new NoFileLoadedException();
+                }
+            }
+            return newPath;
+        }
+        public string FetchPathFromType(ConfigType type)
+        {
+            string newPath = "";
+            FolderBrowserDialog openFileDialog1 = new FolderBrowserDialog { };
+            if (configs.ContainsKey(type))
+            {
+                if (configs.ContainsKey(type) && configs[type].HasPath())
+                {
+                    openFileDialog1.SelectedPath = configs[type].GetPath();
+                }
+                else
+                {
+                    openFileDialog1.Description = configs[type].GetDefaultMessage();
+                }
             }
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -135,60 +131,108 @@ namespace Hades_Map_Editor.Managers
             }
             return newPath;
         }
-        public void SetProjectPath(string path)
+        public void AddProjectPath(string path)
         {
-            if (!configs.OpenProjects.Contains(path))
+            if(projectList.Find(v => { return v.GetPath() == path; }) == null)
             {
-                configs.OpenProjects.Add(path);
-                if (!configs.RecentProjects.Contains(path))
-                {
-                    configs.RecentProjects.Add(path);
-                }
-                if (configs.RecentProjects.Count > 10)
-                {
-                    configs.RecentProjects.RemoveAt(0);
-                }
+                projectList.Add(new ProjectPath(path));
+                SaveConfig();
             }
-            SaveConfig(configPath, configs);
         }
-        public void RemoveProjectPath(string path)
+        public List<string> GetAllProjectPath()
         {
-            FolderBrowserDialog openFileDialog1 = new FolderBrowserDialog { };
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            List<string> result = new List<string>();
+            foreach (var project in projectList.Where(v => { return v.isOpen; }))
             {
-                if (configs.OpenProjects.Contains(path))
-                {
-                    configs.OpenProjects.Remove(openFileDialog1.SelectedPath);
-                }
+                result.Add(project.GetPath());
             }
-            SaveConfig(configPath, configs);
+            return result;
         }
-        public Dictionary<string, string> GetAllConfigs()
+    }
+    public class ProjectPath
+    {
+        public bool isOpen;
+        public string path;
+        public bool HasPath()
         {
-            return GetAllConfigs();
+            return Directory.Exists(path) && path != "";
+        }
+        public string GetPath()
+        {
+            return path;
+        }
+        public ProjectPath(string path)
+        {
+            this.path = path;
+            isOpen = true;
         }
     }
     public class ConfigData
     {
-        public List<string> OpenProjects;
-        public List<string> RecentProjects;
-        public string HadesPath;
-        public string ResourcesPath;
-        public string PythonPath;
-        public string DefaultPath;
-        public ConfigData()
+        ConfigType type;
+        string path, defaultPath, defaultMessage;
+        public string GetDefaultMessage()
         {
-            OpenProjects = new List<string>();
-            RecentProjects = new List<string>();
+            return defaultMessage;
         }
-        public Dictionary<string, string> GetAllConfigs()
+        public void SetPath(string path)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            result["HadesPath"] = HadesPath;
-            result["ResourcesPath"] = ResourcesPath;
-            result["PythonPath"] = PythonPath;
-            result["DefaultPath"] = DefaultPath;
-            return result;
+            this.path = path;
         }
+        public bool HasPath()
+        {
+            return Directory.Exists(path) && path != "";
+        }
+        public string GetPath()
+        {
+            if (!HasPath())
+            {
+                return defaultPath;
+            }
+            else
+            {
+                return path;
+            }
+        }
+        public ConfigData(ConfigType type, string defaultPath, string defaultMessage, string path = "")
+        {
+            this.type = type;
+            this.defaultPath = defaultPath;
+            this.defaultMessage = defaultMessage;
+            this.path = path;
+        }
+    }
+    public class ConfigFile
+    {
+        public List<ProjectPath> projectList;
+        public Dictionary<ConfigType, string> configPaths;
+        public ConfigFile()
+        {
+            configPaths = new Dictionary<ConfigType, string>();
+            projectList = new List<ProjectPath>();
+        }
+        public ConfigFile(Dictionary<ConfigType, ConfigData> configData, List<ProjectPath> projectPaths)
+        {
+            configPaths = new Dictionary<ConfigType, string>();
+            foreach (var config in configData)
+            {
+                if (config.Value.HasPath())
+                {
+                    configPaths.Add(config.Key, config.Value.GetPath());
+                }
+            }
+            projectList = projectPaths;
+        }
+        public bool TryGetValue(ConfigType type, out string val)
+        {
+            return configPaths.TryGetValue(type, out val);
+        }
+    }
+    public enum ConfigType
+    {
+        HadesPath,
+        ResourcesPath,
+        PythonPath,
+        ProjectPath,
     }
 }

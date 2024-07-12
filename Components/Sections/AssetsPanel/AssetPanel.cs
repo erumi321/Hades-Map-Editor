@@ -2,6 +2,7 @@
 using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,10 +13,11 @@ namespace Hades_Map_Editor.AssetsSection
 {
     public class AssetPanel : Panel, IComponent
     {
-        Panel margin;
         PictureBox picture;
         Label name;
         public bool isSelected = false;
+        ContextMenu assetContextMenu;
+        MenuItem create, replace;
         public AssetPanel()
         {
             Initialize();
@@ -24,23 +26,29 @@ namespace Hades_Map_Editor.AssetsSection
         }
         public void Initialize()
         {
-            margin = new Panel();
-            margin.Location = new System.Drawing.Point(3, 3);
-            margin.Size = new Size(ClientSize.Width-6, ClientSize.Height-6);
             name = new Label();
             name.Dock = DockStyle.Bottom;
             picture = new PictureBox();
             picture.SizeMode = PictureBoxSizeMode.AutoSize;
             BorderStyle = BorderStyle.FixedSingle;
 
-            margin.Controls.Add(name);
-            margin.Controls.Add(picture);
-            Controls.Add(margin);
+            assetContextMenu = new ContextMenu();
+            create = assetContextMenu.MenuItems.Add("Create Element");
+            replace = assetContextMenu.MenuItems.Add("Replace Selected Element");
+
+            Controls.Add(name);
+            Controls.Add(picture);
         }
         public void Populate()
         {
-            Click += (s, e) => AssetPanel_Click(s, e);
-            Paint += (s, e) => AssetPanel_Paint(s, e);
+            picture.Click += (s, e) => AssetPanel_Click(s, e);
+            name.Click += (s, e) => AssetPanel_Click(s, e);
+            picture.Paint += (s, e) => AssetPanel_Paint(s, e);
+            name.Paint += (s, e) => AssetPanel_Paint(s, e);
+            
+            picture.ContextMenu = assetContextMenu;
+
+            create.Click += (s, e) => AssetContextMenu_Click(s, e);
         }
         public void SetImage(string name, Image image)
         {
@@ -51,9 +59,15 @@ namespace Hades_Map_Editor.AssetsSection
 
         private void AssetPanel_Click(object sender, EventArgs e)
         {
-            isSelected = true;
+        }
+        private void AssetContextMenu_Click(object sender, EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+        }
+        public void Unselect()
+        {
+            isSelected = false;
             Refresh();
-            Console.WriteLine("Clicked");
         }
         private void AssetPanel_Paint(object sender, PaintEventArgs e)
         {
@@ -70,17 +84,53 @@ namespace Hades_Map_Editor.AssetsSection
                 }
             }
         }
-            /*public void Select(int selectedId)
+        private void AssetPanel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            System.Drawing.Point point = new System.Drawing.Point(e.X, e.Y);
+            switch (e.Button)
             {
-                properties.Load(elementManager.GetElement(selectedId).info);
-                this.selectedId = selectedId;
-            }*/
-            /*public void CheckActive(bool value)
-            {
-                if(selectedId != 0)
-                {
-                    elementManager.GetElement(selectedId).info.Active = value;
-                }
-            }*/
+                case MouseButtons.Left:
+                    {
+                        LeftMouseDown(point);
+                    }
+                    break;
+                case MouseButtons.Right:
+                    {
+                        RightMouseDown(point);
+                    }
+                    break;
+            }
+
         }
+        private void LeftMouseDown(System.Drawing.Point point)
+        {
+            isSelected = true;
+            FormManager formManager = FormManager.GetInstance();
+            formManager.GetAssetsPanel().GetCurrentTab().SelectAsset(this);
+            formManager.GetAssetsPanel().GetCurrentTab().SelectAsset(this);
+            Debug.WriteLine(name.Text);
+            Refresh();
+            Console.WriteLine("Left:" + point.ToString());
+            //AssetsManager assetsManager = AssetsManager.GetInstance();
+        }
+        private void RightMouseDown(System.Drawing.Point point)
+        {
+            System.Drawing.Point adjustedPoint = new System.Drawing.Point(point.X - HorizontalScroll.Value, point.Y - VerticalScroll.Value);
+            assetContextMenu.Show(this, adjustedPoint);//places the menu at the pointer position
+            Console.WriteLine("Right:" + adjustedPoint.ToString());
+        }
+
+        /*public void Select(int selectedId)
+        {
+            properties.Load(elementManager.GetElement(selectedId).info);
+            this.selectedId = selectedId;
+        }*/
+        /*public void CheckActive(bool value)
+        {
+            if(selectedId != 0)
+            {
+                elementManager.GetElement(selectedId).info.Active = value;
+            }
+        }*/
+    }
 }

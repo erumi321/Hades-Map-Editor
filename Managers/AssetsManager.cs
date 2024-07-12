@@ -1,4 +1,5 @@
 ﻿using Hades_Map_Editor.Data;
+using Hades_Map_Editor.Properties;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 using Newtonsoft.Json;
@@ -58,7 +59,7 @@ namespace Hades_Map_Editor.Managers
                 Assets assets = new Assets();
                 ConfigManager configManager = ConfigManager.GetInstance();
                 Console.WriteLine("Start Compilation");
-                var directories = Directory.GetDirectories(configManager.GetResourcesPath());
+                var directories = Directory.GetDirectories(configManager.GetPath(ConfigType.ResourcesPath));
                 foreach (var fulldirectory in directories)
                 {
                     string directory = Path.GetFileName(fulldirectory);
@@ -113,7 +114,7 @@ namespace Hades_Map_Editor.Managers
                 formManager.GetBottomMenu().SetStatuts("Fetch assets...");
                 ConfigManager configManager = ConfigManager.GetInstance();
                 List<Task> tasks = new List<Task>();
-                tasks.Add(RunProcessAsync(configManager.GetPythonPath(), "Tartarus",configManager.GetHadesPath(), configManager.GetResourcesPath()));
+                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Tartarus",configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Erebus", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Asphodel", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Elysium", configManager.GetHadesPath(), configManager.GetResourcesPath());

@@ -40,8 +40,8 @@ namespace Hades_Map_Editor.ElementsSection
             ListBox listBox = (ListBox)sender;
             Obstacle obs = listBoxIndex[listBox.SelectedIndex];
             Console.WriteLine(obs.Id);
-            formManager.GetPropertiesPanel().FocusOn(obs);
-            formManager.GetMapPanel().FocusOn(obs);
+            formManager.GetPropertiesPanel().FocusOn(obs.Id);
+            formManager.GetMapPanel().FocusOn(obs.Id);
         }
         private void ElementsList_DrawItem(object sender, DrawItemEventArgs e)
         {
@@ -50,6 +50,14 @@ namespace Hades_Map_Editor.ElementsSection
             {
                 return;
             }
+            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
+                e = new DrawItemEventArgs(e.Graphics,
+                                          e.Font,
+                                          e.Bounds,
+                                          e.Index,
+                                          e.State ^ DrawItemState.Selected,
+                                          e.ForeColor,
+                                          System.Drawing.Color.LightGray); // Choose the color.
             e.DrawBackground();
             // Define the default color of the brush as black.
             Brush myBrush = Brushes.Black;
@@ -81,11 +89,11 @@ namespace Hades_Map_Editor.ElementsSection
         {
             ClearSelected();
         }
-        public void FocusOn(Obstacle obs)
+        public void FocusOn(int id)
         {
             foreach (var index in listBoxIndex)
             {
-                if(obs.Id == index.Value.Id)
+                if(id == index.Value.Id)
                 {
                     SelectedIndex = index.Key;
                     break;

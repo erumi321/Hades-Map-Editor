@@ -72,7 +72,7 @@ namespace Hades_Map_Editor.Components
             // New feature (Create)
             filesSubNew = new ToolStripMenuItem("New");
             filesNewAction = new ToolStripMenuItem("New Map");
-            filesNewAction.Enabled = false;
+            //filesNewAction.Enabled = false;
             // Open feature (Open, Recent)
             filesOpenProjectAction = new ToolStripMenuItem("Open .hades_map");
             filesOpenMapAction = new ToolStripMenuItem("Open .map_text");
@@ -83,7 +83,7 @@ namespace Hades_Map_Editor.Components
             filesMenu.DropDownItems.Add(filesSubNew);
             filesMenu.DropDownItems.Add(filesOpenProjectAction);
             filesMenu.DropDownItems.Add(filesOpenMapAction);
-            foreach (string project in configManager.GetRecentPath())
+            foreach (string project in configManager.GetAllProjectPath())
             {
                 ToolStripMenuItem recentAction = new ToolStripMenuItem(Path.GetFileName(project));
                 filesRecentAction.Add(recentAction);
@@ -160,7 +160,9 @@ namespace Hades_Map_Editor.Components
         }
         private void Action_New(object sender, EventArgs e)
         {
-            //app.tabPage.CreateNewTabPage("New file");
+            SaveManager saveManager = SaveManager.GetInstance();
+            ConfigManager configManager = ConfigManager.GetInstance();
+            app.tabPage.CreateNewTabPage(saveManager.CreateProject(configManager.FetchPath("Select Path to Create Project","")));
         }
         private void Action_OpenProject(object sender, EventArgs e)
         {
@@ -203,8 +205,11 @@ namespace Hades_Map_Editor.Components
                 Task compileTask = assetsManager.CompileAssets();
                 compileTask.ContinueWith(task =>
                 {
-                    formManager.GetAssetsPanel().RefreshData();
-                    formManager.GetElementsPanel().RefreshData();
+                    if (formManager.HasTabOpen())
+                    {
+                        formManager.GetAssetsPanel().RefreshData();
+                        formManager.GetElementsPanel().RefreshData();
+                    }
                 });
                 //FormManager.GetInstance().GetAssetsPanel().Refresh();
             }

@@ -1,18 +1,21 @@
-﻿using Hades_Map_Editor.Managers;
+﻿//using Hades_Map_Editor.Data;
+using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Hades_Map_Editor.PropertiesSection
 {
-    public class PropertyTextbox : PropertyItem<string>, IComponent
+    public class PropertyLocation : PropertyItem<Point>, IComponent
     {
-        protected TextBox textBox;
+        protected TextBox xTextBox;
+        protected TextBox yTextBox;
         bool canEdit;
-        public PropertyTextbox(string label, bool edit = false) : base(label)
+        public PropertyLocation(string label, bool edit = false) : base(label)
         {
             canEdit = edit;
             Initialize();
@@ -21,12 +24,15 @@ namespace Hades_Map_Editor.PropertiesSection
         }
         public new void Initialize()
         {
+            xTextBox = new TextBox();
+            xTextBox.Dock = DockStyle.Right;
+            xTextBox.Enabled = canEdit;
+            Controls.Add(xTextBox);
 
-            textBox = new TextBox();
-            textBox.Dock = DockStyle.Right; 
-            textBox.Enabled = canEdit;
-            Leave += new EventHandler(Property_Leave);
-            Controls.Add(textBox);
+            yTextBox = new TextBox();
+            yTextBox.Dock = DockStyle.Right;
+            yTextBox.Enabled = canEdit;
+            Controls.Add(yTextBox);
             //Controls.Add(textBox);
 
             //BorderStyle = BorderStyle.FixedSingle;
@@ -35,9 +41,10 @@ namespace Hades_Map_Editor.PropertiesSection
         public new void Populate()
         {
         }
-        public override void Update(string value)
+        public override void Update(Point value)
         {
-            textBox.Text = value;
+            xTextBox.Text = string.Format("{0:0}", value.X);
+            yTextBox.Text = string.Format("{0:0}", value.Y);
         }
         private void Property_Leave(object sender, EventArgs e)
         {
@@ -48,18 +55,18 @@ namespace Hades_Map_Editor.PropertiesSection
                 if (double.Parse(Text) < 0)
                 {
                     // If the number is negative, display it in Red.
-                    ForeColor = System.Drawing.Color.Red;
+                    ForeColor = Color.Red;
                 }
                 else
                 {
                     // If the number is not negative, display it in Black.
-                    ForeColor = System.Drawing.Color.Black;
+                    ForeColor = Color.Black;
                 }
             }
             catch
             {
                 // If there is an error, display the text using the system colors.
-                ForeColor = System.Drawing.Color.White;
+                ForeColor = Color.White;
             }
         }
     }

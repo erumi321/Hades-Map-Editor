@@ -120,6 +120,21 @@
     <Compile Include="Components\Sections\AssetsPanel\AssetsPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyColor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyAttachedIDs.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyLocation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyID.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyTitle.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\Sections\PropertiesPanel\PropertyTextbox.cs">
       <SubType>Component</SubType>
     </Compile>

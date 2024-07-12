@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Community.CsharpSqlite.Sqlite3;
 
 namespace Hades_Map_Editor.MapSection
 {
@@ -19,7 +20,8 @@ namespace Hades_Map_Editor.MapSection
         Obstacle selected;
         Image currentImage;
         Rectangle selectRect;
-        Panel canvas, backgroundCanvas, overlayCanvas;
+        PictureBox canvas;
+        ContextMenu canvasContextMenu;
         public MapCanvas()
         {
             listOfLoadedAssets = new List<Obstacle>();
@@ -39,14 +41,19 @@ namespace Hades_Map_Editor.MapSection
             //overlayCanvas.BackColor = System.Drawing.Color.Transparent;
             //Controls.Add(overlayCanvas);
 
-            canvas = new Panel();
+            canvas = new PictureBox();
             canvas.BackColor = System.Drawing.Color.LightGray;
             canvas.Paint += new PaintEventHandler(MapCanvas_Paint);
             Controls.Add(canvas);
+            canvasContextMenu = new ContextMenu();
+            canvasContextMenu.MenuItems.Add("Item 1");
+            canvasContextMenu.MenuItems.Add("Item 2");
         }
         public void Populate()
         {
-            MouseDown += new System.Windows.Forms.MouseEventHandler(MapCanvas_MouseDown);
+            //MouseDown += new System.Windows.Forms.MouseEventHandler(MapCanvas_MouseDown);
+            canvas.MouseDown += (s, e) => MapCanvas_MouseDown(s, e);
+            canvas.ContextMenu = canvasContextMenu;
         }
         public void AddItem(Obstacle obs)
         {
@@ -95,8 +102,8 @@ namespace Hades_Map_Editor.MapSection
             Graphics finalGraphic = Graphics.FromImage(finalImage);
             FormManager formManager = FormManager.GetInstance();
             int temp = 0;
+            listOfLoadedAssets = listOfLoadedAssets.OrderByDescending((Obstacle val) => { return val.GetLayerLevel(); }).ToList();
             finalGraphic.ScaleTransform(CurrentScale, CurrentScale);
-            listOfLoadedAssets = listOfLoadedAssets.OrderByDescending((Obstacle val) => { return val.GetLayerLevel(); } ).ToList();
             foreach (Obstacle obs in listOfLoadedAssets)
             {
                 Asset asset;
@@ -105,7 +112,8 @@ namespace Hades_Map_Editor.MapSection
                 {
                     continue;
                 }
-                using (System.Drawing.Image image = asset.GetImage(obs.Scale))
+                Size size = obs.GetDimension();
+                using (System.Drawing.Image image = asset.GetImage(size))
                 {
                     Utility.FlipImage(image, obs.FlipHorizontal,obs.FlipVertical);
                     finalGraphic.DrawImage(image, new PointF((float)(obs.Location.X - minOffsetX), (float)(obs.Location.Y - minOffsetY)));
@@ -127,9 +135,13 @@ namespace Hades_Map_Editor.MapSection
                 return new Rectangle(-1,-1,-1,-1);
             }
         }
-        public Size GetOffset()
+        public Size GetOffset(Point location )
         {
-            return new Size((int) minOffsetX + X,(int) minOffsetY + Y);
+            return new Size((int)(location.X-minOffsetX),(int)(location.Y - minOffsetY));
+        }
+        public Size GetMapOffset()
+        {
+            return canvas.Size;
         }
         private void MapCanvas_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
@@ -145,21 +157,6 @@ namespace Hades_Map_Editor.MapSection
             {
                 e.Graphics.DrawRectangle(blackPen, selectRect.X, selectRect.Y, selectRect.Width, selectRect.Height);
             }
-        }
-        private void MapCanvas_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            // Create a local version of the graphics object for the PictureBox.
-            System.Drawing.Point click = new System.Drawing.Point(e.X, e.Y);
-            foreach (var obstacle in listOfLoadedAssets)
-            {
-                Asset asset;
-                if(obstacle.GetAsset(out asset))
-                {
-                    //asset.rect.x
-                }
-            }
-            Console.WriteLine(click);
-            //AssetsManager assetsManager = AssetsManager.GetInstance();
         }
         public void SetSelect(Obstacle obs)
         {
@@ -241,5 +238,50 @@ namespace Hades_Map_Editor.MapSection
             MapRefresh();
             Refresh();
         }
+        private void MapCanvas_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            System.Drawing.Point point = new System.Drawing.Point(e.X, e.Y);
+            switch (e.Button)
+            {
+                case MouseButtons.Left:
+                    {
+                        LeftMouseDown(point);
+                    }
+                    break;
+                case MouseButtons.Right:
+                    {
+                        RightMouseDown(point);
+                    }
+                    break;
+            }
+
+        }
+        private void LeftMouseDown(System.Drawing.Point point)
+        {
+            foreach (var obstacle in listOfLoadedAssets)
+            {
+                Asset asset;
+                if (obstacle.GetAsset(out asset))
+                {
+                    //asset.rect.x
+                }
+            }
+            Console.WriteLine("Left:" + point.ToString());
+            //AssetsManager assetsManager = AssetsManager.GetInstance();
+        }
+        private void RightMouseDown(System.Drawing.Point point)
+        {
+            System.Drawing.Point adjustedPoint = new System.Drawing.Point(point.X - HorizontalScroll.Value, point.Y - VerticalScroll.Value);
+            canvasContextMenu.Show(this, adjustedPoint);//places the menu at the pointer position
+            Console.WriteLine("Right:" + adjustedPoint.ToString());
+            var filteredList = listOfLoadedAssets.Where((Obstacle obs) => {
+                return false;
+            }).ToList();
+        }
+        /*private void CanvasContextMenu_MouseClick(object sender, MouseEventArgs me)
+        {
+            System.Drawing.Point coordinates = me.Location;
+            canvasContextMenu.ContextMenu.Show(canvasContextMenu, new System.Drawing.Point(coordinates.X, coordinates.Y));
+        }*/
     }
 }

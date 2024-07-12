@@ -12,7 +12,8 @@ namespace Hades_Map_Editor.Sections
 {
     public class PropertiesPanel: Panel, IComponent, Focusable
     {
-        private Label noSelectionLable;
+        private ProjectData data;
+        private Label noSelectionLabel;
         private Panel attributePanel;
         private Obstacle currentObstacle;
         PropertyCheckbox activateAtRange, active, allowMovementReaction, causesOcculsion, clutter, collision, 
@@ -20,34 +21,37 @@ namespace Hades_Map_Editor.Sections
             useBoundsForSortArea;
         PropertyDouble activationRange, ambient, angle, hue, offsetZ, parallaxAmount, saturation, scale, 
             skewAngle, skewScale, tallness, value;
-        PropertyInt attachToID, helpTextId, id, sortIndex;
+        PropertyInt helpTextId, id, sortIndex;
         PropertyTextbox comments, dataType, name;
-        
-        //PropertyLocation location
-        //PropertyIds attachedIDs;
+        PropertyTitle obstacleTitle, metadataTitle;
+
+        PropertyID attachToID;
+        PropertyLocation location;
+        PropertyAttachedIDs attachedIDs;
         //PropertyGroup groupNames;
-        //PropertyColor color;
+        PropertyColor color;
         //PropertyPoints points;
-        public PropertiesPanel()
+        public PropertiesPanel(ProjectData data)
         {
+            this.data = data;
             Initialize();
             Populate();
             //properties = new ThingTextProperties(this, panel);
         }
         public void Initialize()
         {
-            BackColor = System.Drawing.Color.Blue;
-            AutoScroll = true;
+            BackColor = System.Drawing.Color.DarkGray;
+            //AutoScroll = true;
             //AutoSize = true;
             Dock = DockStyle.Fill;
 
-            noSelectionLable = new Label();
-            noSelectionLable.Text = "No Selection";
-            noSelectionLable.AutoSize = false;
-            noSelectionLable.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            noSelectionLable.Dock = DockStyle.Top;
-            noSelectionLable.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            
+            noSelectionLabel = new Label();
+            noSelectionLabel.Text = "No Selection";
+            noSelectionLabel.AutoSize = true;
+            noSelectionLabel.Left = (ClientSize.Width - noSelectionLabel.Width) / 2;
+            noSelectionLabel.Top = (ClientSize.Height - noSelectionLabel.Height) / 2;
+            //noSelectionLable.Dock = DockStyle.Cente;
+            noSelectionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
             attributePanel = new TableLayoutPanel();
             attributePanel.AutoScroll = true;
@@ -57,18 +61,19 @@ namespace Hades_Map_Editor.Sections
             attributePanel.BackColor = System.Drawing.Color.Red;
             attributePanel.Visible = true;
 
+            obstacleTitle = new PropertyTitle("Obstacles Data");
             activateAtRange = new PropertyCheckbox("Activate At Range");
             activationRange = new PropertyDouble("Activation Range");
             active = new PropertyCheckbox("Active");
             allowMovementReaction = new PropertyCheckbox("Allow Movement Reaction");
             ambient = new PropertyDouble("Ambient");
             angle = new PropertyDouble("Angle");
-            attachToID = new PropertyInt("Attached To ID");
-            //attachedIDs = 
+            attachToID = new PropertyID("Attached To ID");
+            attachedIDs = new PropertyAttachedIDs("Attached IDs");
             causesOcculsion = new PropertyCheckbox("Causes Occulsion");
             clutter = new PropertyCheckbox("Clutter");
             collision = new PropertyCheckbox("Collision");
-            //color = 
+            color = new PropertyColor("Color");
             comments = new PropertyTextbox("Comments");
             createsShadows = new PropertyCheckbox("Creates Shadows");
             dataType = new PropertyTextbox("Data Type");
@@ -81,7 +86,7 @@ namespace Hades_Map_Editor.Sections
             id = new PropertyInt("Id");
             ignoreGridManager = new PropertyCheckbox("Ignore Grid Manager");
             invert = new PropertyCheckbox("Invert");
-            //location =
+            location = new PropertyLocation("Location");
             name = new PropertyTextbox("Name");
             offsetZ = new PropertyDouble("Offset Z");
             parallaxAmount = new PropertyDouble("Parallax Amount");
@@ -96,6 +101,8 @@ namespace Hades_Map_Editor.Sections
             useBoundsForSortArea = new PropertyCheckbox("Use Bounds For Sort Area");
             value = new PropertyDouble("Value");
 
+            
+            attributePanel.Controls.Add(obstacleTitle);
             attributePanel.Controls.Add(activateAtRange);
             attributePanel.Controls.Add(activationRange);
             attributePanel.Controls.Add(active);
@@ -103,11 +110,11 @@ namespace Hades_Map_Editor.Sections
             attributePanel.Controls.Add(ambient);
             attributePanel.Controls.Add(angle);
             attributePanel.Controls.Add(attachToID);
-            //attributePanel.Controls.Add(attachedIDs);
+            attributePanel.Controls.Add(attachedIDs);
             attributePanel.Controls.Add(causesOcculsion);
             attributePanel.Controls.Add(clutter);
             attributePanel.Controls.Add(collision);
-            //attributePanel.Controls.Add(color);
+            attributePanel.Controls.Add(color);
             attributePanel.Controls.Add(comments);
             attributePanel.Controls.Add(createsShadows);
             attributePanel.Controls.Add(dataType);
@@ -120,7 +127,7 @@ namespace Hades_Map_Editor.Sections
             attributePanel.Controls.Add(id);
             attributePanel.Controls.Add(ignoreGridManager);
             attributePanel.Controls.Add(invert);
-            //attributePanel.Controls.Add(location);
+            attributePanel.Controls.Add(location);
             attributePanel.Controls.Add(name);
             attributePanel.Controls.Add(offsetZ);
             attributePanel.Controls.Add(parallaxAmount);
@@ -135,8 +142,9 @@ namespace Hades_Map_Editor.Sections
             attributePanel.Controls.Add(useBoundsForSortArea);
             attributePanel.Controls.Add(value);
             //attributePanel.Visible = false;
+
             Controls.Add(attributePanel);
-            Controls.Add(noSelectionLable);
+            Controls.Add(noSelectionLabel);
         }
         public void Populate()
         {
@@ -144,12 +152,12 @@ namespace Hades_Map_Editor.Sections
         }
         public void UnFocus()
         {
-            noSelectionLable.Visible = true;
+            noSelectionLabel.Visible = true;
             attributePanel.Visible = false;
         }
-        public void FocusOn(Obstacle obstacle)
+        public void FocusOn(int obsID)
         {
-            currentObstacle = obstacle;
+            currentObstacle = data.mapData.GetFromId(obsID);
             activateAtRange.Update(currentObstacle.ActivateAtRange);
             activationRange.Update(currentObstacle.ActivationRange);
             active.Update(currentObstacle.Active);
@@ -157,11 +165,11 @@ namespace Hades_Map_Editor.Sections
             ambient.Update(currentObstacle.Ambient);
             angle.Update(currentObstacle.Angle);
             attachToID.Update(currentObstacle.AttachToID);
-            //attachedIDs.Update(currentObstacle.AttachedIDs);
+            attachedIDs.Update(currentObstacle.AttachedIDs.ToArray());
             causesOcculsion.Update(currentObstacle.CausesOcculsion);
             clutter.Update(currentObstacle.Clutter);
             collision.Update(currentObstacle.Collision);
-            //color.Update(currentObstacle.Color);
+            color.Update(currentObstacle.GetColor());
             comments.Update((string)currentObstacle.Comments);
             //createsShadows.Update((bool)currentObstacle.CreatesShadows);
             dataType.Update(currentObstacle.DataType);
@@ -174,7 +182,7 @@ namespace Hades_Map_Editor.Sections
             id.Update(currentObstacle.Id);
             ignoreGridManager.Update(currentObstacle.IgnoreGridManager);
             invert.Update(currentObstacle.Invert);
-            //location.Update(currentObstacle.Location);
+            location.Update(currentObstacle.GetLocation());
             name.Update(currentObstacle.Name);
             offsetZ.Update(currentObstacle.OffsetZ);
             parallaxAmount.Update(currentObstacle.ParallaxAmount);
@@ -196,7 +204,7 @@ namespace Hades_Map_Editor.Sections
             useBoundsForSortArea.Update(currentObstacle.UseBoundsForSortArea);
             value.Update(currentObstacle.Value);
 
-            noSelectionLable.Visible = false;
+            noSelectionLabel.Visible = false;
             attributePanel.Visible = true;
 
         }

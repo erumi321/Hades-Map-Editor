@@ -15,8 +15,9 @@ namespace Hades_Map_Editor.AssetsSection
         private List<Asset> assets;
         private int currentPage;
         private int maxRow = 5, maxColumn = 7, wsize = 100, hsize = 120;
-        public Dictionary<int, AssetPanel> assetsPanel;
+        public AssetPanel[] assetsPanel;
         public PagingComponent paging;
+        private AssetPanel currentAsset;
 
         public AssetTab()
         {
@@ -27,12 +28,12 @@ namespace Hades_Map_Editor.AssetsSection
         public void Initialize()
         {
             currentPage = -1;
-            assetsPanel = new Dictionary<int, AssetPanel>();
+            assetsPanel = new AssetPanel[maxRow * maxColumn];
             
-            for (int i = 0; i < maxRow * maxColumn; i++)
+            for (int i = 0; i < assetsPanel.Length; i++)
             {
                 AssetPanel panel = new AssetPanel();
-                assetsPanel.Add(i, panel);
+                assetsPanel[i] = panel;
                 panel.Size = new System.Drawing.Size(wsize, hsize);
                 panel.Location = new System.Drawing.Point((i % maxRow) * wsize, (i / maxRow) * hsize);
                 panel.BackColor = (i % 2 == 0) ? System.Drawing.Color.CadetBlue : System.Drawing.Color.Cornsilk;
@@ -58,12 +59,12 @@ namespace Hades_Map_Editor.AssetsSection
             currentPage = pageNumber;
             
             var pageCapacity = maxRow * maxColumn;
-            for (int i = 0; i < assetsPanel.Count; i++) {
+            for (int i = 0; i < assetsPanel.Length; i++) {
                 var index = currentPage * pageCapacity + i;
                 if (index< assets.Count-1)
                 {
                     assetsPanel[i].Visible = true;
-                    assetsPanel[i].SetImage(assets[index].name, assets[index].GetImage(wsize, wsize));
+                    assetsPanel[i].SetImage(assets[index].name, assets[index].GetImage(new Size(wsize, wsize)));
                 }
                 else
                 {
@@ -76,6 +77,20 @@ namespace Hades_Map_Editor.AssetsSection
         public int GetCurrentPage()
         {
             return currentPage;
+        }
+        public void SelectAsset(AssetPanel selected)
+        {
+            if(currentAsset != null)
+            {
+                currentAsset.Unselect();
+            }
+            foreach (var panel in assetsPanel)
+            {
+                if(panel == selected){
+                    currentAsset = panel;
+                    break;
+                }
+            }
         }
         /*public void Select(int selectedId)
 {

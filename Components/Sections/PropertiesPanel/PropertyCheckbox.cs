@@ -11,8 +11,10 @@ namespace Hades_Map_Editor.PropertiesSection
     public class PropertyCheckbox: PropertyItem<bool>, IComponent
     {
         CheckBox checkBox;
-        public PropertyCheckbox(string label) : base(label)
+        bool canEdit;
+        public PropertyCheckbox(string label, bool edit = false) : base(label)
         {
+            canEdit = edit;
             Initialize();
             Populate();
             //properties = new ThingTextProperties(this, panel);
@@ -20,9 +22,10 @@ namespace Hades_Map_Editor.PropertiesSection
         public new void Initialize()
         {
             checkBox = new CheckBox();
-            checkBox.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            checkBox.Dock = DockStyle.Top;
-            split.Panel2.Controls.Add(checkBox);
+            checkBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            checkBox.Enabled = canEdit;
+            //checkBox.Dock = DockStyle.Left;
+            Controls.Add(checkBox);
         }
         public new void Populate()
         {

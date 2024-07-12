@@ -32,7 +32,7 @@ namespace Hades_Map_Editor
     {
         public MapAssetCommon parent { get; set; }
         public string name { get; set; }
-        public Rect rect { get; set; }
+        public Rectangle rect { get; set; }
         public Point topLeft { get; set; }
         public Point originalSize { get; set; }
         public Scale scaleRatio { get; set; }
@@ -45,14 +45,14 @@ namespace Hades_Map_Editor
         {
             this.parent = parent;
             name = json.name;
-            rect = json.rect;
-            topLeft = json.topLeft;
-            originalSize = json.originalSize;
+            rect = json.GetRect();
+            topLeft = json.GetTopLeft();
+            originalSize = json.GetOriginalSize();
             scaleRatio = json.scaleRatio;
             isMulti = json.isMulti;
             isMip = json.isMip;
             isAlpha8 = json.isAlpha8;
-            hull = json.hull;
+            hull = json.GetHull();
         }
         public string GetName()
         {

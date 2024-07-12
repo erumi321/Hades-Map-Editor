@@ -64,7 +64,7 @@ namespace Hades_Map_Editor.Components
         }
         private void CreatePropertiesPanel()
         {
-            propertiesPanel = new PropertiesPanel();
+            propertiesPanel = new PropertiesPanel(data);
             leftSplitContainer.Panel1.Controls.Add(propertiesPanel);
         }
         private void CreateElementsPanel()
@@ -79,7 +79,7 @@ namespace Hades_Map_Editor.Components
         }
         private void CreateAssetsPanel()
         {
-            assetsPanel = new AssetsPanel();
+            assetsPanel = new AssetsPanel(data);
             rightSplitContainer.Panel2.Controls.Add(assetsPanel);
         }
         private void CreateGroupBoxes(TabPage tabPage)

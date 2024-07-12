@@ -22,15 +22,13 @@ namespace Hades_Map_Editor.Managers
             return _instance;
         }
         private SaveManager() { }
-        public ProjectData CreateProject(string path)
+        public ProjectData CreateProject(string directoryPath)
         {
             MapData mapData = new MapData();
             mapData.Obstacles = new List<Obstacle>();
-            ProjectData projectData =  new ProjectData(path, mapData);
+            ProjectData projectData =  new ProjectData(directoryPath+@"\myProject.hades_map", mapData);
             SaveProject(projectData);
 
-            ConfigManager config = ConfigManager.GetInstance();
-            config.SetProjectPath(projectData.projectPath);
             return projectData;
         }
         public void SaveProject(ProjectData projectData)
@@ -61,6 +59,8 @@ namespace Hades_Map_Editor.Managers
                 string json = JsonConvert.SerializeObject(projectData);
                 file.Write(json);
             }
+            ConfigManager config = ConfigManager.GetInstance();
+            config.AddProjectPath(projectData.projectPath);
         }
         public ProjectData LoadProject(string path)
         {
@@ -99,7 +99,7 @@ namespace Hades_Map_Editor.Managers
             }
             LoadAssetsToMapData(projectData.mapData);
             ConfigManager config = ConfigManager.GetInstance();
-            config.SetProjectPath(projectData.projectPath);
+            config.AddProjectPath(projectData.projectPath);
             return projectData;            
         }
         public void ExportMap(MapData mapData)
@@ -148,7 +148,7 @@ namespace Hades_Map_Editor.Managers
         public void SaveAssets(Assets _assets)
         {
             ConfigManager configManager = ConfigManager.GetInstance();
-            using (StreamWriter file = new StreamWriter(configManager.GetResourcesPath() + @"\assets.json"))
+            using (StreamWriter file = new StreamWriter(configManager.GetPath(ConfigType.ResourcesPath) + @"\assets.json"))
             {
                 string json = JsonConvert.SerializeObject(_assets);
                 file.Write(json);
@@ -158,9 +158,9 @@ namespace Hades_Map_Editor.Managers
         {
             Assets assets;
             ConfigManager configManager = ConfigManager.GetInstance();
-            if (File.Exists(configManager.GetResourcesPath() + @"\assets.json"))
+            if (File.Exists(configManager.GetPath(ConfigType.ResourcesPath) + @"\assets.json"))
             {
-                using (StreamReader r = new StreamReader(configManager.GetResourcesPath() + @"\assets.json"))
+                using (StreamReader r = new StreamReader(configManager.GetPath(ConfigType.ResourcesPath) + @"\assets.json"))
                 {
                     string json = r.ReadToEnd();
                     assets = JsonConvert.DeserializeObject<Assets>(json);

@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Hades_Map_Editor.Data.Obstacle;
 
 namespace Hades_Map_Editor.Data
 {
@@ -35,56 +36,91 @@ namespace Hades_Map_Editor.Data
         public string biome { get; set; }
         public string assetpath { get; set; }
         public string name { get; set; }
-        public Rect rect { get; set; }
-        public Point topLeft { get; set; }
-        public Point originalSize { get; set; }
+        public JsonRect rect
+        {
+            get { return new JsonRect { x = pRect.X, y = pRect.Y, width = pRect.Width, height = pRect.Height }; }
+            set
+            {
+                pRect = new Rectangle(value.x, value.y, value.width, value.height);
+            }
+        }
+        public JsonPoint topLeft
+        {
+            get { return new JsonPoint { X = pTopLeft.X, Y = pTopLeft.Y }; }
+            set
+            {
+                pTopLeft = new Point((int)value.X, (int)value.Y);
+            }
+        }
+        public JsonPoint originalSize
+        {
+            get { return new JsonPoint { X = pOriginalSize.X, Y = pOriginalSize.Y }; }
+            set
+            {
+                pOriginalSize = new Point((int)value.X, (int)value.Y);
+            }
+        }
         public Scale scaleRatio { get; set; }
         public bool isMulti { get; set; }
         public bool isMip { get; set; }
         public bool isAlpha8 { get; set; }
         public List<Point> hull { get; set; }
+        private Rectangle pRect;
+        private Point pTopLeft;
+        private Point pOriginalSize;
 
         private Image image;
+        public Rectangle GetRect()
+        {
+            return pRect;
+        }
+        public Point GetTopLeft()
+        {
+            return pTopLeft;
+        }
+        public Point GetOriginalSize()
+        {
+            return pOriginalSize;
+        }
         public Asset() { }
         public Asset(MapAssetCommon parent, SubAtlaseJson json)
         {
             ConfigManager configManager = ConfigManager.GetInstance();            
             biome = parent.name.Split('\\').Last().Split('_').First();
-            assetpath = configManager.GetResourcesPath() + @"\" + biome + @"\textures\atlases\" + parent.GetName() + ".png";
+            assetpath = configManager.GetPath(ConfigType.ResourcesPath) + @"\" + biome + @"\textures\atlases\" + parent.GetName() + ".png";
             name = json.name.Split('\\').Last().Replace("_", "");
-            rect = json.rect;
-            topLeft = json.topLeft;
-            originalSize = json.originalSize;
+            pRect = json.GetRect();
+            pTopLeft = json.GetTopLeft();
+            pOriginalSize = json.GetOriginalSize();
             scaleRatio = json.scaleRatio;
             isMulti = json.isMulti;
             isMip = json.isMip;
             isAlpha8 = json.isAlpha8;
-            hull = json.hull;
+            hull = json.GetHull();
             Enum.TryParse(json.name.Split('\\').First(), out AssetType myType);
             type = myType;
             //image = Utility.LoadImage(assetpath, rect);
         }
-        public Image GetImage(double scale = -1, double height = -1)
+        public Image GetImage(Size size = new Size())
         {
             if (image == null)
             {
                 image = LoadImage();
             }
-            if(height != -1)
+            if (size.Width == 0 || size.Height == 0)
             {
-                return Utility.ResizeImage(image, (int)(scale), (int)(height));
+                return image;
             }
-            if(scale != -1)
+            else
             {
-                return Utility.ResizeImage(image, (int)(rect.width * scale * scaleRatio.x), (int)(rect.height * scale * scaleRatio.y));
+                return Utility.ResizeImage(image, size.Width, size.Height);
             }
-            return image;
         }
         public Image LoadImage()
         {
             if (image == null)
             {
-                return Utility.LoadImage(assetpath, rect);
+                return Utility.LoadImage(assetpath, GetRect());
             }
             throw new Exception("Couldn't load image");
         }

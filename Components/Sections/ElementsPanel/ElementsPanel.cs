@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Hades_Map_Editor.Sections
 {
-    public class ElementsPanel : Panel, IComponent, IDataFeed
+    public class ElementsPanel : Panel, IComponent, IDataFeed, Focusable
     {
         ProjectData data;
         public ElementsList listBox;
@@ -53,6 +53,15 @@ namespace Hades_Map_Editor.Sections
         {
             listBox.Items.Clear();
             _ = GetData();
+        }
+
+        public void UnFocus()
+        {
+            listBox.UnFocus();
+        }
+        public void FocusOn(int id)
+        {
+            listBox.FocusOn(id);
         }
     }
 }

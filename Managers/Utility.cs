@@ -13,13 +13,13 @@ namespace Hades_Map_Editor
 {
     public static class Utility
     {
-        public static Image LoadImage(string filePath, Rect cropArea)
+        public static Image LoadImage(string filePath, Rectangle cropArea)
         {
             Bitmap copy;
             using (var stream = File.OpenRead(filePath))
             {
                 Bitmap orig = (Bitmap)Bitmap.FromStream(stream);
-                copy = orig.Clone(new Rectangle(cropArea.x, cropArea.y, cropArea.width, cropArea.height), orig.PixelFormat);
+                copy = orig.Clone(new Rectangle(cropArea.X, cropArea.Y, cropArea.Width, cropArea.Height), orig.PixelFormat);
             }
             return copy;
         }

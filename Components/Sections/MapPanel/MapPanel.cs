@@ -33,13 +33,13 @@ namespace Hades_Map_Editor.Sections
             BorderStyle = BorderStyle.FixedSingle;
             SetAutoScrollMargin(0, 50);
 
-            zoomIn = new ToolStripMenuItem();
-            zoomIn.Text = "+";
-            zoomIn.Click += (s, e) => MapPanel_ZoomIn_Click(s, e);
-
             zoomOut = new ToolStripMenuItem();
-            zoomOut.Text = "-";
+            zoomOut.Text = "+";
             zoomOut.Click += (s, e) => MapPanel_ZoomOut_Click(s, e);
+
+            zoomIn = new ToolStripMenuItem();
+            zoomIn.Text = "-";
+            zoomIn.Click += (s, e) => MapPanel_ZoomIn_Click(s, e);
 
             topMenu = new MenuStrip();
             topMenu.Dock = DockStyle.Top;
@@ -89,18 +89,20 @@ namespace Hades_Map_Editor.Sections
         public void UnFocus()
         {
         }
-        public void FocusOn(Obstacle obs)
+        public void FocusOn(int id)
         {
+            Obstacle obs = data.mapData.GetFromId(id);
             //Size size = canvas;
             //Add rectangle
 
             // Adjust scrollbar
-            Size offset = canvas.GetOffset();
-            
-            if(obs.HasAsset())
+            Size offset = canvas.GetOffset(obs.GetLocation());
+            //Size mapOffset = canvas.GetMapOffset();
+
+            if (obs.HasAsset())
             {
-                canvas.VerticalScroll.Value = Math.Max(Math.Min((int)obs.Location.X - offset.Width, VerticalScroll.Maximum), 0);
-                canvas.HorizontalScroll.Value = Math.Max(Math.Min((int)obs.Location.Y - offset.Height, HorizontalScroll.Maximum), 0);
+                canvas.VerticalScroll.Value = Math.Max(Math.Min(offset.Width, canvas.VerticalScroll.Maximum), 0);
+                canvas.HorizontalScroll.Value = Math.Max(Math.Min(offset.Height, canvas.HorizontalScroll.Maximum), 0);
                 canvas.SetSelect(obs);
                 //PerformLayout();
             }
