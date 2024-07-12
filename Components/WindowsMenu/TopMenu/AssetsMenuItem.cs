@@ -86,8 +86,8 @@ namespace Hades_Map_Editor.Components
                 {
                     if (formManager.HasTabOpen())
                     {
-                        formManager.GetAssetsPanel().RefreshData();
-                        formManager.GetElementsPanel().RefreshData();
+                        //formManager.GetAssetsPanel().RefreshData();
+                        //formManager.GetElementsPanel().RefreshData();
                     }
                 });
                 //FormManager.GetInstance().GetAssetsPanel().Refresh();

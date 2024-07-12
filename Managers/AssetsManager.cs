@@ -63,7 +63,7 @@ namespace Hades_Map_Editor.Managers
                 foreach (var fulldirectory in directories)
                 {
                     string manifestPath = fulldirectory +@"\manifest";
-                    if (!File.Exists(manifestPath))
+                    if (!Directory.Exists(manifestPath))
                     {
                         continue;
                     }
