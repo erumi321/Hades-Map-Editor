@@ -18,6 +18,9 @@ namespace Hades_Map_Editor.Components.Dialogs
         }
         public void Initialize()
         {
+            Text = "Parameters";
+            Width = 1000;
+            Height = 500;
             //FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             Dock = DockStyle.Fill;
 
