@@ -31,10 +31,6 @@ namespace Hades_Map_Editor.Managers
         private FormManager() {
             
         }
-        public bool HasTabOpen()
-        {
-            return form.tabPage.tabPages.Count > 0;
-        }
         public static void SetForm(HadesMapEditor forms)
         {
             form = forms;

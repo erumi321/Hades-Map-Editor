@@ -51,7 +51,7 @@ namespace Hades_Map_Editor.Components
             newProject.DropDownItems.Add(newHades2Project);
             DropDownItems.Add(openMapOrProject);
             DropDownItems.Add(recentProjects);
-            foreach (string project in configManager.GetRecentPath())
+            foreach (string project in configManager.GetAllProjectPath())
             {
                 recentProjects.DropDownItems.Add(new ToolStripMenuItem(Path.GetFileName(project)));
             }

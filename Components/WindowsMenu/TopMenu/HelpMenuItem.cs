@@ -55,7 +55,7 @@ namespace Hades_Map_Editor.Components
         }
         private void About_Action(object sender, System.EventArgs e)
         {
-            MessageBox.Show("Version: 0.02-alpha\n\nCreated by AlexKage", "About");
+            MessageBox.Show("Version: 0.03-alpha\n\nCreated by AlexKage", "About");
         }
     }
 }
