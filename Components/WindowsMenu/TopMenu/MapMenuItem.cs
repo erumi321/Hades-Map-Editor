@@ -68,7 +68,7 @@ namespace Hades_Map_Editor.Components
             Console.WriteLine("Map Clicked");
             FormManager formManager = FormManager.GetInstance();
             bool hasMapOpen = formManager.HasTabOpen();
-            refreshMap.Enabled = hasMapOpen;
+            refreshMap.Enabled = false;
             //loadMapText.Enabled = hasMapOpen;
             //metadataView.Enabled = hasMapOpen;
         }
