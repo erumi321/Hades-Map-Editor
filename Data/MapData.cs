@@ -13,10 +13,21 @@ namespace Hades_Map_Editor.Data
     public class MapData
     {
         public List<Obstacle> Obstacles { get; set; }
+        public List<Obstacle> GetAllObstacles(bool withAsset = false)
+        {
+            if (withAsset)
+            {
+                return Obstacles.FindAll((obs) => { return obs.HasAsset(); });//obs.Active; });
+            }
+            else
+            {
+                return Obstacles;
+            }
+        }
 
         public List<Obstacle> GetActiveObstacles()
         {
-            return Obstacles.FindAll((obs) => { return obs.Active; });
+            return Obstacles.FindAll((obs) => { return obs.Id == 485258; });//obs.Active; });
         }
         public Obstacle GetFromId(int id)
         {

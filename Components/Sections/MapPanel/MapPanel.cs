@@ -101,8 +101,10 @@ namespace Hades_Map_Editor.Sections
 
             if (obs.HasAsset())
             {
-                canvas.VerticalScroll.Value = Math.Max(Math.Min(offset.Width, canvas.VerticalScroll.Maximum), 0);
-                canvas.HorizontalScroll.Value = Math.Max(Math.Min(offset.Height, canvas.HorizontalScroll.Maximum), 0);
+                obs.GetAsset(out Asset asset);
+                var currentScale = canvas.GetCurrentScale();
+                canvas.VerticalScroll.Value = (int)Math.Max(Math.Min((offset.Height * currentScale) - (Height/2) +(asset.GetRect().Height/ 2 * currentScale), canvas.VerticalScroll.Maximum), 0);
+                canvas.HorizontalScroll.Value = (int)Math.Max(Math.Min((offset.Width* currentScale) - (Width/2) + (asset.GetRect().Width / 2 * currentScale), canvas.HorizontalScroll.Maximum), 0);
                 canvas.SetSelect(obs);
                 //PerformLayout();
             }
@@ -116,7 +118,7 @@ namespace Hades_Map_Editor.Sections
         public void GetData()
         {
                 AssetsManager assetsManager = AssetsManager.GetInstance();
-                foreach (Obstacle obs in data.mapData.Obstacles)
+                foreach (Obstacle obs in data.mapData.GetAllObstacles(true))
                 {
                     Asset asset;
                     if (assetsManager.GetAsset(obs.Name, out asset))

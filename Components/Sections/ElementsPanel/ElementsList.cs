@@ -37,11 +37,15 @@ namespace Hades_Map_Editor.ElementsSection
         public void Action_SelectElement(object sender, EventArgs e)
         {
             FormManager formManager = FormManager.GetInstance();
-            ListBox listBox = (ListBox)sender;
-            Obstacle obs = listBoxIndex[listBox.SelectedIndex];
-            Console.WriteLine(obs.Id);
-            formManager.GetPropertiesPanel().FocusOn(obs.Id);
-            formManager.GetMapPanel().FocusOn(obs.Id);
+            string message = (string)((ListBox)sender).SelectedItem;
+            if(message == null)
+            {
+                return;
+            }
+            int id = int.Parse(message.Split(':')[0]);
+            Console.WriteLine(id);
+            formManager.GetPropertiesPanel().FocusOn(id);
+            formManager.GetMapPanel().FocusOn(id);
         }
         private void ElementsList_DrawItem(object sender, DrawItemEventArgs e)
         {

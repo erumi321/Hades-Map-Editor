@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using static Community.CsharpSqlite.Sqlite3;
 
@@ -46,8 +47,6 @@ namespace Hades_Map_Editor.MapSection
             canvas.Paint += new PaintEventHandler(MapCanvas_Paint);
             Controls.Add(canvas);
             canvasContextMenu = new ContextMenu();
-            canvasContextMenu.MenuItems.Add("Item 1");
-            canvasContextMenu.MenuItems.Add("Item 2");
         }
         public void Populate()
         {
@@ -97,7 +96,7 @@ namespace Hades_Map_Editor.MapSection
         }
         public void MapRefresh()
         {
-            canvas.Size = new Size((int)((maxOffsetX - minOffsetX)* CurrentScale + 2 * X), (int)((maxOffsetY - minOffsetY) * CurrentScale + 2 * Y));
+            canvas.Size = new System.Drawing.Size((int)((maxOffsetX - minOffsetX)* CurrentScale + 2 * X), (int)((maxOffsetY - minOffsetY) * CurrentScale + 2 * Y));
             Image finalImage = new Bitmap(canvas.Size.Width, canvas.Size.Height);
             Graphics finalGraphic = Graphics.FromImage(finalImage);
             FormManager formManager = FormManager.GetInstance();
@@ -112,7 +111,7 @@ namespace Hades_Map_Editor.MapSection
                 {
                     continue;
                 }
-                Size size = obs.GetDimension();
+                System.Drawing.Size size = obs.GetDimension();
                 using (System.Drawing.Image image = asset.GetImage(size))
                 {
                     Utility.FlipImage(image, obs.FlipHorizontal,obs.FlipVertical);
@@ -123,23 +122,24 @@ namespace Hades_Map_Editor.MapSection
             //BackColor = System.Drawing.Color.Transparent;
             currentImage = finalImage;
         }
-        private Rectangle GetObstacleRect(Obstacle obs)
+        private Rectangle GetObstacleRect(Obstacle obs, bool withCanvasScale = false)
         {
             Asset asset;
+            float scale = (withCanvasScale) ? CurrentScale : 1.0f;
             if(obs.GetAsset(out asset))
             {
-                return new Rectangle((int)(obs.Location.X - minOffsetX), (int)(obs.Location.Y - minOffsetY), (int)(asset.rect.width * obs.Scale * asset.scaleRatio.x), (int)(asset.rect.height * obs.Scale * asset.scaleRatio.y));
+                return new Rectangle((int)((obs.Location.X - minOffsetX) * scale), (int)((obs.Location.Y - minOffsetY) * scale), (int)(asset.rect.width * obs.Scale * asset.scaleRatio.x * scale), (int)(asset.rect.height * obs.Scale * asset.scaleRatio.y * scale));
             }
             else
             {
                 return new Rectangle(-1,-1,-1,-1);
             }
         }
-        public Size GetOffset(Point location )
+        public System.Drawing.Size GetOffset(System.Drawing.Point location )
         {
-            return new Size((int)(location.X-minOffsetX),(int)(location.Y - minOffsetY));
+            return new System.Drawing.Size((int)(location.X-minOffsetX),(int)(location.Y - minOffsetY));
         }
-        public Size GetMapOffset()
+        public System.Drawing.Size GetMapOffset()
         {
             return canvas.Size;
         }
@@ -160,7 +160,7 @@ namespace Hades_Map_Editor.MapSection
         }
         public void SetSelect(Obstacle obs)
         {
-            Rectangle rect = GetObstacleRect(obs);
+            Rectangle rect = GetObstacleRect(obs,true);
             if(rect.X < 0)
             {
                 return;
@@ -256,6 +256,15 @@ namespace Hades_Map_Editor.MapSection
             }
 
         }
+        public float GetCurrentScale()
+        {
+            return CurrentScale;
+        }
+        private bool IsObstacleInCoordinate(Obstacle obstacle, System.Drawing.Point point)
+        {
+            Rectangle rect = GetObstacleRect(obstacle, true);
+            return rect.X <= point.X && rect.X + rect.Width >= point.X && rect.Y <= point.Y && rect.Y + rect.Height >= point.Y;
+        }
         private void LeftMouseDown(System.Drawing.Point point)
         {
             foreach (var obstacle in listOfLoadedAssets)
@@ -272,11 +281,25 @@ namespace Hades_Map_Editor.MapSection
         private void RightMouseDown(System.Drawing.Point point)
         {
             System.Drawing.Point adjustedPoint = new System.Drawing.Point(point.X - HorizontalScroll.Value, point.Y - VerticalScroll.Value);
-            canvasContextMenu.Show(this, adjustedPoint);//places the menu at the pointer position
-            Console.WriteLine("Right:" + adjustedPoint.ToString());
             var filteredList = listOfLoadedAssets.Where((Obstacle obs) => {
-                return false;
+                return IsObstacleInCoordinate(obs, point);
             }).ToList();
+            canvasContextMenu.MenuItems.Clear();
+            foreach (var item in filteredList)
+            {
+                canvasContextMenu.MenuItems.Add(item.Id.ToString(), MapCanvas_SelectObstacle);
+            }
+            canvasContextMenu.Show(this, adjustedPoint);//places the menu at the pointer position
+            //Console.WriteLine("Right:" + point.ToString());
+        }
+        private void MapCanvas_SelectObstacle(object sender, System.EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+            MenuItem item = (MenuItem)sender;
+            int id = int.Parse(item.Text);
+            formManager.GetElementsPanel().FocusOn(id);
+            formManager.GetPropertiesPanel().FocusOn(id);
+            formManager.GetMapPanel().FocusOn(id);
         }
         /*private void CanvasContextMenu_MouseClick(object sender, MouseEventArgs me)
         {
