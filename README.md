@@ -16,3 +16,5 @@ You can then import with Files -> Open .map_text. It will import and create a ne
 Features in place:
 - Click in the Element Manager to see what metadata it has. It will display the metadata in the metadata manager.
 - See Map Manager in the middle, but only loaded assets are viewable.
+
+Version 0.0.3

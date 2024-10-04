@@ -95,7 +95,10 @@ namespace Hades_Map_Editor.Data
         private Point pLocation;
         public int GetLayerLevel()
         {
-            return SortIndex;
+            GetAsset(out Asset asset);
+            if (asset.name.Contains("TartarusTerrainBrickSquare")) {  return 1; }
+            return (int)Location.Y+ dimension.Height;
+                //(int)Value*100;
         }
         public bool GetAsset(out Asset asset)
         {

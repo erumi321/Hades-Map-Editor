@@ -31,21 +31,25 @@ namespace Hades_Map_Editor.PropertiesSection
 
             bTextBox = new TextBox();
             bTextBox.Dock = DockStyle.Right;
+            bTextBox.Width = 32;
             bTextBox.Enabled = canEdit;
             Controls.Add(bTextBox);
 
             gTextBox = new TextBox();
             gTextBox.Dock = DockStyle.Right;
+            gTextBox.Width = 32;
             gTextBox.Enabled = canEdit;
             Controls.Add(gTextBox);
 
             rTextBox = new TextBox();
             rTextBox.Dock = DockStyle.Right;
+            rTextBox.Width = 32;
             rTextBox.Enabled = canEdit;
             Controls.Add(rTextBox);
 
             aTextBox = new TextBox();
             aTextBox.Dock = DockStyle.Right;
+            aTextBox.Width = 32;
             aTextBox.Enabled = canEdit;
             Controls.Add(aTextBox);
         }

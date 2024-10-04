@@ -14,6 +14,7 @@ namespace Hades_Map_Editor.Sections
         ProjectData data;
         public ElementsList listBox;
         public Dictionary<int, int> listBoxIndex;
+        public FlowLayoutPanel headerPanel;
         public ElementsPanel(ProjectData projectData)
         {
             data = projectData;
@@ -25,7 +26,9 @@ namespace Hades_Map_Editor.Sections
             listBoxIndex = new Dictionary<int, int>();
             Dock = DockStyle.Fill;
             listBox = new ElementsList(data);
-            
+            listBox.Dock = DockStyle.Fill;
+
+            Controls.Add(headerPanel);
             Controls.Add(listBox);
         }
 
@@ -40,7 +43,7 @@ namespace Hades_Map_Editor.Sections
             {
                 //WRITING A FILE OR SOME SUCH THINGAMAGIG
                 listBox.BeginUpdate();
-                foreach (var obstacle in data.mapData.GetActiveObstacles())
+                foreach (var obstacle in data.mapData.GetAllObstacles())
                 {
                     listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
                 }

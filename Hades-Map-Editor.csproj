@@ -242,6 +242,26 @@
     </Compile>
     <None Include="samples\A_Combat01.hades_map" />
     <None Include="samples\A_Combat01.map_text" />
+    <None Include="samples\MapObstacle\1_DevObstacles.sjson" />
+    <None Include="samples\MapObstacle\AmbienceGenerators.sjson" />
+    <None Include="samples\MapObstacle\Asphodel.sjson" />
+    <None Include="samples\MapObstacle\Atmosphere.sjson" />
+    <None Include="samples\MapObstacle\Backgrounds.sjson" />
+    <None Include="samples\MapObstacle\BiomeMap.sjson" />
+    <None Include="samples\MapObstacle\Chaos.sjson" />
+    <None Include="samples\MapObstacle\Elysium.sjson" />
+    <None Include="samples\MapObstacle\Epilogue.sjson" />
+    <None Include="samples\MapObstacle\FX.sjson" />
+    <None Include="samples\MapObstacle\Gameplay.sjson" />
+    <None Include="samples\MapObstacle\Graybox.sjson" />
+    <None Include="samples\MapObstacle\GUI.sjson" />
+    <None Include="samples\MapObstacle\House.sjson" />
+    <None Include="samples\MapObstacle\Light.sjson" />
+    <None Include="samples\MapObstacle\Styx.sjson" />
+    <None Include="samples\MapObstacle\Surface.sjson" />
+    <None Include="samples\MapObstacle\Tartarus.sjson" />
+    <None Include="samples\MapObstacle\Temple.sjson" />
+    <None Include="samples\MapObstacle\Travel.sjson" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

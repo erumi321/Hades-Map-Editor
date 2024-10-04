@@ -16,7 +16,7 @@ namespace Hades_Map_Editor.MapSection
     {
         List<Obstacle> listOfLoadedAssets;
         static int X = 200, Y = 200;
-        float CurrentScale = 1.0f;
+        float CurrentScale = 0.25f;
         double minOffsetX, maxOffsetX, minOffsetY, maxOffsetY;
         Obstacle selected;
         Image currentImage;
@@ -101,7 +101,7 @@ namespace Hades_Map_Editor.MapSection
             Graphics finalGraphic = Graphics.FromImage(finalImage);
             FormManager formManager = FormManager.GetInstance();
             int temp = 0;
-            listOfLoadedAssets = listOfLoadedAssets.OrderByDescending((Obstacle val) => { return val.GetLayerLevel(); }).ToList();
+            listOfLoadedAssets = listOfLoadedAssets.OrderBy((Obstacle val) => { return val.GetLayerLevel(); }).ToList();
             finalGraphic.ScaleTransform(CurrentScale, CurrentScale);
             foreach (Obstacle obs in listOfLoadedAssets)
             {
