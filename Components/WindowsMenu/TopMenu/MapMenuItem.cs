@@ -7,16 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.TopMenu
 {
     public class MapMenuItem : ToolStripMenuItem, IComponent
     {
         public ToolStripMenuItem
             refreshMap, loadMapText, metadataView;
-        HadesMapEditor app;
-        public MapMenuItem(HadesMapEditor app) : base("Map")
+        public MapMenuItem() : base("Map")
         {
-            this.app = app;
             Initialize();
             Populate();
             Dock = DockStyle.Top;
@@ -60,8 +58,9 @@ namespace Hades_Map_Editor.Components
         private void RefreshMap_Action(object sender, EventArgs e)
         {
             FormManager formManager = FormManager.GetInstance();
-            formManager.GetAssetsPanel().RefreshData();
-            formManager.GetElementsPanel().RefreshData();
+            var pp = (Parent as TopMenuStrip).GetMainControl().GetCurrentProjectPage();
+            pp.assetsPanel.RefreshData();
+            pp.elementsPanel.RefreshData();
         }
         private void Self_Open(object sender, EventArgs e)
         {

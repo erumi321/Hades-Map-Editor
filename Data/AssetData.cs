@@ -9,25 +9,49 @@ using static Hades_Map_Editor.Data.Obstacle;
 
 namespace Hades_Map_Editor.Data
 {
-    public class Assets
+    public class AssetData
     {
-        public Dictionary<string, Dictionary<AssetType, Dictionary<string, Asset>>> biomes;
-        public Assets()
+        public Dictionary<string, BiomeAssetData> biomeData;
+        public AssetData()
         {
-            biomes = new Dictionary<string, Dictionary<AssetType, Dictionary<string, Asset>>>();
+            biomeData = new Dictionary<string, BiomeAssetData>();
         }
-        public void LoadImages()
+        public void LoadImages(string selectedBiome = "all")
         {
-            foreach (var biome in biomes)
+            if (selectedBiome == "all")
             {
-                foreach (var type in biome.Value)
+                foreach (var biome in biomeData)
                 {
-                    foreach (var asset in type.Value)
+                    foreach (var type in biome.Value.assetsData)
                     {
-                        asset.Value.LoadImage();
+                        foreach (var asset in type.Value)
+                        {
+                            asset.Value.LoadImage();
+                        }
                     }
                 }
             }
+            else
+            {
+                if(biomeData.ContainsKey(selectedBiome))
+                {
+                    foreach (var type in biomeData[selectedBiome].assetsData)
+                    {
+                        foreach (var asset in type.Value)
+                        {
+                            asset.Value.LoadImage();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public class BiomeAssetData
+    {
+        public Dictionary<AssetType, Dictionary<string, Asset>> assetsData;
+        public BiomeAssetData()
+        {
+            assetsData = new Dictionary<AssetType, Dictionary<string, Asset>> ();
         }
     }
     public class Asset

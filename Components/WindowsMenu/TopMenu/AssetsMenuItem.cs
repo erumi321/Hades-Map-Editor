@@ -7,17 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.TopMenu
 {
     public class AssetsMenuItem : ToolStripMenuItem, IComponent
     {
         public ToolStripMenuItem
             createElement, createEmptyElement,
             fetch, compile, biomes;
-        HadesMapEditor app;
-        public AssetsMenuItem(HadesMapEditor app) : base("Assets")
+        public AssetsMenuItem() : base("Assets")
         {
-            this.app = app;
             Initialize();
             Populate();
             Dock = DockStyle.Top;

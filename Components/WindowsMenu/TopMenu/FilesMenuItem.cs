@@ -1,4 +1,5 @@
-﻿using Hades_Map_Editor.Managers;
+﻿using Hades_Map_Editor.Components.Dialogs;
+using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.TopMenu
 {
     public class FilesMenuItem : ToolStripMenuItem, IComponent
     {
@@ -16,10 +17,9 @@ namespace Hades_Map_Editor.Components
             newProject, newHadesProject, newHades2Project, openMapOrProject, tempImport, recentProjects,
             save, saveAs, saveAll, export, exportAs, exportAsImage, 
             close, closeAll, parameters, exit;
-        HadesMapEditor app;
-        public FilesMenuItem(HadesMapEditor app) : base("Files")
+        ParametersDialog parametersDialog;
+        public FilesMenuItem() : base("Files")
         {
-            this.app = app;
             Initialize();
             Populate();
             Dock = DockStyle.Top;
@@ -121,28 +121,28 @@ namespace Hades_Map_Editor.Components
         }
         private void OpenMapOrProject_Action(object sender, EventArgs e)
         {
-            SaveManager saveManager = SaveManager.GetInstance();
+            IOManager saveManager = IOManager.GetInstance();
             try
             {
-                app.tabPage.CreateNewTabPage(saveManager.LoadProject(""));
+                (Parent as TopMenuStrip).GetMainControl().CreateNewTabPage(saveManager.LoadProject(""));
             }
             catch (Exception){ }
         }
         private void TemporaryImport_Action(object sender, EventArgs e)
         {
-            SaveManager saveManager = SaveManager.GetInstance();
+            IOManager saveManager = IOManager.GetInstance();
             try
             {
-                app.tabPage.CreateNewTabPage(saveManager.ImportMap(""));
+                (Parent as TopMenuStrip).GetMainControl().CreateNewTabPage(saveManager.ImportMap(""));
             }
             catch (Exception) { }
         }
         private void Recent_Action(object sender, EventArgs e)
         {
-            SaveManager saveManager = SaveManager.GetInstance();
+            IOManager saveManager = IOManager.GetInstance();
             try
             {
-                app.tabPage.CreateNewTabPage(saveManager.LoadProject(""));
+                (Parent as TopMenuStrip).GetMainControl().CreateNewTabPage(saveManager.LoadProject(""));
             }
             catch (Exception) { }
         }
@@ -182,7 +182,7 @@ namespace Hades_Map_Editor.Components
         }
         private void Parameters_Action(object sender, System.EventArgs e)
         {
-            app.parametersDialog.OpenDialog();
+            (Parent as TopMenuStrip).GetMainControl().parametersDialog.OpenDialog();
         }
         private void Exit_Action(object sender, EventArgs e)
         {

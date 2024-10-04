@@ -10,7 +10,7 @@ namespace Hades_Map_Editor.PropertiesSection
 {
     public class PropertyTitle : PropertyItem<string>, IComponent
     {
-        public PropertyTitle(string label) : base(label)
+        public PropertyTitle(PropertiesPanel parent, string label) : base(parent, label)
         {
             Initialize();
             Populate();
@@ -18,7 +18,7 @@ namespace Hades_Map_Editor.PropertiesSection
         }
         public new void Initialize()
         {
-            nameLabel.Left = 50;
+            //nameLabel.Left = 50;
             nameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
         }

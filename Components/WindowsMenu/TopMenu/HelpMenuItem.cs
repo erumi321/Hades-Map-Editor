@@ -8,16 +8,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Interop;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.TopMenu
 {
     public class HelpMenuItem : ToolStripMenuItem, IComponent
     {
         public ToolStripMenuItem
             githubLink, discordLink, aboutItem;
-        HadesMapEditor app;
-        public HelpMenuItem(HadesMapEditor app) : base("Help")
+        public HelpMenuItem() : base("Help")
         {
-            this.app = app;
             Initialize();
             Populate();
             Dock = DockStyle.Top;

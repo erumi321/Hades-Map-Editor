@@ -1,4 +1,5 @@
-﻿using Hades_Map_Editor.Managers;
+﻿using Hades_Map_Editor.Data;
+using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.TopMenu
 {
     public class TopMenuStrip: MenuStrip, IComponent
     {
@@ -24,12 +25,12 @@ namespace Hades_Map_Editor.Components
         public void Initialize()
         {
             // Create a MenuStrip control with a new window.
-            filesMenu = new FilesMenuItem(app);
-            editMenu = new EditMenuItem(app);
-            viewMenu = new ViewMenuItem(app);
-            assetMenu = new AssetsMenuItem(app);
-            mapMenu = new MapMenuItem(app);
-            helpMenu = new HelpMenuItem(app);
+            filesMenu = new FilesMenuItem();
+            editMenu = new EditMenuItem();
+            viewMenu = new ViewMenuItem();
+            assetMenu = new AssetsMenuItem();
+            mapMenu = new MapMenuItem();
+            helpMenu = new HelpMenuItem();
 
             // Assign the ToolStripMenuItem that displays 
             // the list of child forms.
@@ -46,6 +47,18 @@ namespace Hades_Map_Editor.Components
 
         public void Populate()
         {
+        }
+        public MainControl GetMainControl()
+        {
+            return app.tabPage;
+        }
+        public ProjectPage GetProjectPage()
+        {
+            return app.tabPage.GetCurrentProjectPage();
+        }
+        public ProjectData GetData()
+        {
+            return app.tabPage.GetCurrentProjectPage().GetData();
         }
     }
 }

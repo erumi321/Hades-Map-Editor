@@ -1,5 +1,8 @@
 ﻿using Hades_Map_Editor.Data;
-using Hades_Map_Editor.Sections;
+using Hades_Map_Editor.PropertiesSection;
+using Hades_Map_Editor.AssetsSection;
+using Hades_Map_Editor.ElementsSection;
+using Hades_Map_Editor.MapSection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor
 {
-    public class CustomTabPage : TabPage, IComponent
+    public class ProjectPage : TabPage, IComponent
     {
         ProjectData data;
+        ToolStripContainer toolStripContainer;
         CustomSplitContainer mainSplitContainer, leftSplitContainer, rightSplitContainer;
         public PropertiesPanel propertiesPanel;
         public AssetsPanel assetsPanel;
         public ElementsPanel elementsPanel;
         public MapPanel mapPanel;
-        public CustomTabPage(ProjectData data)
+        public ProjectPage(ProjectData data)
         {
             this.data = data;
             Initialize();
@@ -36,8 +40,10 @@ namespace Hades_Map_Editor.Components
         {
 
         }
+        public ProjectData GetData() { return data; }
         private void CreateSplitContainers()
         {
+            toolStripContainer = new ToolStripContainer();
             mainSplitContainer = new CustomSplitContainer();
             leftSplitContainer = new CustomSplitContainer();
             rightSplitContainer = new CustomSplitContainer();
@@ -53,33 +59,35 @@ namespace Hades_Map_Editor.Components
             rightSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             rightSplitContainer.SplitterDistance = 100;
             rightSplitContainer.SplitterWidth = 3;
-
+            toolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            toolStripContainer.BackColor = System.Drawing.Color.AliceBlue;
 
 
             // Add it to panels of SplitContainerAdv
             mainSplitContainer.Panel1.Controls.Add(leftSplitContainer);
             mainSplitContainer.Panel2.Controls.Add(rightSplitContainer);
-
-            Controls.Add(mainSplitContainer);
+            toolStripContainer.ContentPanel.Controls.Add(mainSplitContainer);
+            Controls.Add(toolStripContainer);
         }
         private void CreatePropertiesPanel()
         {
-            propertiesPanel = new PropertiesPanel(data);
+            propertiesPanel = new PropertiesPanel(this);
             leftSplitContainer.Panel1.Controls.Add(propertiesPanel);
         }
         private void CreateElementsPanel()
         {
-            elementsPanel = new ElementsPanel(data);
+            elementsPanel = new ElementsPanel(this);
             leftSplitContainer.Panel2.Controls.Add(elementsPanel);
         }
         private void CreateMapPanel()
         {
-            mapPanel = new MapPanel(data);
+            mapPanel = new MapPanel(this);
             rightSplitContainer.Panel1.Controls.Add(mapPanel);
+            toolStripContainer.TopToolStripPanel.Controls.Add(mapPanel.GetMapToolStrip());
         }
         private void CreateAssetsPanel()
         {
-            assetsPanel = new AssetsPanel(data);
+            assetsPanel = new AssetsPanel(this);
             rightSplitContainer.Panel2.Controls.Add(assetsPanel);
         }
         private void CreateGroupBoxes(TabPage tabPage)

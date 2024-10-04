@@ -7,16 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.TopMenu
 {
     public class EditMenuItem : ToolStripMenuItem, IComponent
     {
         public ToolStripMenuItem
             undo, redo, cut, copy, paste, delete;
-        HadesMapEditor app;
-        public EditMenuItem(HadesMapEditor app) : base("Edit")
+        public EditMenuItem() : base("Edit")
         {
-            this.app = app;
             Initialize();
             Populate();
             Dock = DockStyle.Top;

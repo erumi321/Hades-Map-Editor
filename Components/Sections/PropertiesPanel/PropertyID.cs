@@ -16,7 +16,7 @@ namespace Hades_Map_Editor.PropertiesSection
     {
         protected Button idButton;
         protected Label noneLabel;
-        public PropertyID(string label) : base(label)
+        public PropertyID(PropertiesPanel parent, string label) : base(parent, label)
         {
             Initialize();
             Populate();
@@ -59,11 +59,11 @@ namespace Hades_Map_Editor.PropertiesSection
         private void PropertyID_Click(object sender, EventArgs e)
         {
             int id = Int32.Parse(idButton.Text);
-            FormManager formManager = FormManager.GetInstance();
             Console.WriteLine(id);
-            formManager.GetPropertiesPanel().FocusOn(id);
-            formManager.GetMapPanel().FocusOn(id);
-            formManager.GetElementsPanel().FocusOn(id);
+            ProjectPage pp = GetProjectPage();
+            pp.propertiesPanel.FocusOn(id);
+            pp.mapPanel.FocusOn(id);
+            pp.elementsPanel.FocusOn(id);
         }
     }
 }

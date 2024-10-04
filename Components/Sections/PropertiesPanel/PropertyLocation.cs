@@ -15,7 +15,7 @@ namespace Hades_Map_Editor.PropertiesSection
         protected TextBox xTextBox;
         protected TextBox yTextBox;
         bool canEdit;
-        public PropertyLocation(string label, bool edit = false) : base(label)
+        public PropertyLocation(PropertiesPanel parent, string label, bool edit = false) : base(parent, label)
         {
             canEdit = edit;
             Initialize();

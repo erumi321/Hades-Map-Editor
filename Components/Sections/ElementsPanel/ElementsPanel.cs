@@ -1,61 +1,48 @@
 ﻿using Hades_Map_Editor.Data;
-using Hades_Map_Editor.ElementsSection;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Sections
+namespace Hades_Map_Editor.ElementsSection
 {
-    public class ElementsPanel : Panel, IComponent, IDataFeed, Focusable
+    public class ElementsPanel : SubPanel, IComponent, IDataFeed, Focusable
     {
-        ProjectData data;
         public ElementsList listBox;
         public Dictionary<int, int> listBoxIndex;
-        public FlowLayoutPanel headerPanel;
-        public ElementsPanel(ProjectData projectData)
+        public Panel headerPanel;
+        public ElementsPanel(ProjectPage parent): base(parent,"Map Elements")
         {
-            data = projectData;
+            Parent = parent;
             Initialize();
             Populate();
         }
         public void Initialize()
         {
             listBoxIndex = new Dictionary<int, int>();
-            Dock = DockStyle.Fill;
-            listBox = new ElementsList(data);
-            listBox.Dock = DockStyle.Fill;
+            listBox = new ElementsList(this);
 
-            Controls.Add(headerPanel);
-            Controls.Add(listBox);
+            headerPanel = new Panel();
+            headerPanel.Size = new Size(10, 10);
+            headerPanel.BackColor = Color.LightSeaGreen;
+
+            TopPanel.Controls.Add(headerPanel);
+            ContentPanel.Controls.Add(listBox);
         }
 
         public void Populate()
         {
-            _ = GetData();
-        }
-
-        public async Task GetData()
-        {
-            await Task.Factory.StartNew(() =>
-            {
-                //WRITING A FILE OR SOME SUCH THINGAMAGIG
-                listBox.BeginUpdate();
-                foreach (var obstacle in data.mapData.GetAllObstacles())
-                {
-                    listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
-                }
-                listBox.EndUpdate();
-                Console.WriteLine("Loaded Elements");
-            });
-        }
-
-        public void RefreshData()
-        {
-            listBox.Items.Clear();
-            _ = GetData();
+            var data = GetData();
+            //WRITING A FILE OR SOME SUCH THINGAMAGIG
+            listBox.BeginUpdate();
+                    foreach (var obstacle in data.mapData.GetAllObstacles())
+                    {
+                listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
+                    }
+            listBox.EndUpdate();
         }
 
         public void UnFocus()
@@ -65,6 +52,12 @@ namespace Hades_Map_Editor.Sections
         public void FocusOn(int id)
         {
             listBox.FocusOn(id);
+        }
+
+        public void RefreshData()
+        {
+            listBox.Items.Clear();
+            //_ = GetData();
         }
     }
 }

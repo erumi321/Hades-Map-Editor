@@ -10,18 +10,18 @@ using System.Windows.Forms;
 
 namespace Hades_Map_Editor.Managers
 {
-    public sealed class SaveManager
+    public sealed class IOManager
     {
-        private static SaveManager _instance;
-        public static SaveManager GetInstance()
+        private static IOManager _instance;
+        public static IOManager GetInstance()
         {
             if (_instance == null)
             {
-                _instance = new SaveManager();
+                _instance = new IOManager();
             }
             return _instance;
         }
-        private SaveManager() { }
+        private IOManager() { }
         public ProjectData CreateProject(string directoryPath)
         {
             MapData mapData = new MapData();
@@ -145,7 +145,7 @@ namespace Hades_Map_Editor.Managers
                 }
             }
         }
-        public void SaveAssets(Assets _assets)
+        public void SaveAssets(AssetData _assets)
         {
             ConfigManager configManager = ConfigManager.GetInstance();
             using (StreamWriter file = new StreamWriter(configManager.GetPath(ConfigType.ResourcesPath) + @"\assets.json"))
@@ -154,16 +154,16 @@ namespace Hades_Map_Editor.Managers
                 file.Write(json);
             }
         }
-        public Assets LoadAssets()
+        public AssetData LoadAssets()
         {
-            Assets assets;
+            AssetData assets;
             ConfigManager configManager = ConfigManager.GetInstance();
             if (File.Exists(configManager.GetPath(ConfigType.ResourcesPath) + @"\assets.json"))
             {
                 using (StreamReader r = new StreamReader(configManager.GetPath(ConfigType.ResourcesPath) + @"\assets.json"))
                 {
                     string json = r.ReadToEnd();
-                    assets = JsonConvert.DeserializeObject<Assets>(json);
+                    assets = JsonConvert.DeserializeObject<AssetData>(json);
                 }
                 //assets.LoadImages();
             }

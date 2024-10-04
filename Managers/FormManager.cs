@@ -1,7 +1,8 @@
 ﻿using Hades_Map_Editor.AssetsSection;
+using Hades_Map_Editor.BottomMenu;
 using Hades_Map_Editor.Components;
 using Hades_Map_Editor.Data;
-using Hades_Map_Editor.Sections;
+using Hades_Map_Editor.TopMenu;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace Hades_Map_Editor.Managers
         {
             form = forms;
         }
-        public PropertiesPanel GetPropertiesPanel()
+        /*public PropertiesPanel GetPropertiesPanel()
         {
             return GetCurrentTab().propertiesPanel;
         }
@@ -50,12 +51,12 @@ namespace Hades_Map_Editor.Managers
         public AssetsPanel GetAssetsPanel()
         {
             return GetCurrentTab().assetsPanel;
-        }
+        }*/
         public bool HasTabOpen()
         {
             return form.tabPage.tabPages.Count > 0;
         }
-        public CustomTabPage GetCurrentTab()
+        public ProjectPage GetCurrentTab()
         {
             return form.tabPage.tabPages[form.tabPage.SelectedIndex];
         }

@@ -19,8 +19,9 @@ namespace Hades_Map_Editor.AssetsSection
         public PagingComponent paging;
         private AssetPanel currentAsset;
 
-        public AssetTab()
+        public AssetTab(AssetsPanel assetsPanel)
         {
+            Parent = assetsPanel;
             Initialize();
             Populate();
             //properties = new ThingTextProperties(this, panel);
@@ -32,7 +33,7 @@ namespace Hades_Map_Editor.AssetsSection
             
             for (int i = 0; i < assetsPanel.Length; i++)
             {
-                AssetPanel panel = new AssetPanel();
+                AssetPanel panel = new AssetPanel((AssetsPanel)Parent);
                 assetsPanel[i] = panel;
                 panel.Size = new System.Drawing.Size(wsize, hsize);
                 panel.Location = new System.Drawing.Point((i % maxRow) * wsize, (i / maxRow) * hsize);

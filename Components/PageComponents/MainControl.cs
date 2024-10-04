@@ -1,4 +1,5 @@
-﻿using Hades_Map_Editor.Data;
+﻿using Hades_Map_Editor.Components.Dialogs;
+using Hades_Map_Editor.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,20 +7,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor
 {
-    public class CustomTabControl : TabControl, IComponent
+    public class MainControl : TabControl, IComponent
     {
-        public List<CustomTabPage> tabPages;
-        public CustomTabControl()
+        public List<ProjectPage> tabPages;
+        public ParametersDialog parametersDialog;
+        public ParametersDialog metadataDialog;
+        public MainControl()
         {
             Initialize();
             Populate();
         }
         public void Initialize()
         {
-            tabPages = new List<CustomTabPage>();
+            tabPages = new List<ProjectPage>();
             BackColor = System.Drawing.Color.Green;
+            parametersDialog = new ParametersDialog();
             //tabControl.Layout = 
             //tabControl.Location = new System.Drawing.Point(60, 16);
             Dock = DockStyle.Fill;
@@ -32,7 +36,7 @@ namespace Hades_Map_Editor.Components
         }
         public void CreateNewTabPage(ProjectData data)
         {
-            CustomTabPage tabPage = new CustomTabPage(data);
+            ProjectPage tabPage = new ProjectPage(data);
             tabPage.Text = data.name;
             //tabPage.Size = new System.Drawing.Size(app.form.Width, app.form.Height);
             Form parent = FindForm();
@@ -43,5 +47,6 @@ namespace Hades_Map_Editor.Components
 
             Controls.Add(tabPage);
         }   
+        public ProjectPage GetCurrentProjectPage() { return tabPages[SelectedIndex]; }
     }
 }

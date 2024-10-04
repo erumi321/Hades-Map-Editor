@@ -10,7 +10,7 @@ namespace Hades_Map_Editor.PropertiesSection
 {
     public class PropertyDouble : PropertyTextbox, IComponent
     {
-        public PropertyDouble(string label) : base(label)
+        public PropertyDouble(PropertiesPanel parent, string label) : base(parent, label)
         {
             Initialize();
             Populate();

@@ -90,10 +90,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\HadesMapEditor.cs" />
-    <Compile Include="Components\PageComponents\CustomTabControl.cs">
+    <Compile Include="Components\PageComponents\MainControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\PageComponents\CustomTabPage.cs">
+    <Compile Include="Components\PageComponents\ProjectPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\Sections\ElementsPanel\ElementsList.cs">
@@ -106,6 +106,18 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\Sections\MapPanel\MapPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\MapToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertiesListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertiesTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\SubPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\Sections\PagingComponent.cs">
@@ -153,6 +165,9 @@
     <Compile Include="Components\Sections\PropertiesPanel\PropertiesPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\ToolsMenu\FlatButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\ToolsMenu\CustomContainers.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -198,7 +213,7 @@
     <Compile Include="Components\WindowsMenu\TopMenu\TopMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Data\Assets.cs" />
+    <Compile Include="Data\AssetData.cs" />
     <Compile Include="Data\RawAsset.cs" />
     <Compile Include="Data\ProjectData.cs" />
     <Compile Include="Data\RawAtlasJson.cs" />
@@ -207,7 +222,7 @@
     <Compile Include="Managers\AssetsManager.cs" />
     <Compile Include="Managers\Configuration.cs" />
     <Compile Include="Managers\ConfigManager.cs" />
-    <Compile Include="Managers\SaveManager.cs" />
+    <Compile Include="Managers\IOManager.cs" />
     <Compile Include="Managers\Utility.cs" />
     <Compile Include="HadesMapEditorForm.cs">
       <SubType>Form</SubType>

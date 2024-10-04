@@ -14,7 +14,7 @@ namespace Hades_Map_Editor.PropertiesSection
     {
         protected List<Button> listButton;
         protected Label noneLabel;
-        public PropertyAttachedIDs(string label) : base(label)
+        public PropertyAttachedIDs(PropertiesPanel parent, string label) : base(parent, label)
         {
             Initialize();
             Populate();
@@ -70,9 +70,10 @@ namespace Hades_Map_Editor.PropertiesSection
             int id = Int32.Parse(button.Text);
             FormManager formManager = FormManager.GetInstance();
             Console.WriteLine(id);
-            formManager.GetPropertiesPanel().FocusOn(id);
-            formManager.GetMapPanel().FocusOn(id);
-            formManager.GetElementsPanel().FocusOn(id);
+            var pp = GetProjectPage();
+            pp.propertiesPanel.FocusOn(id);
+            pp.mapPanel.FocusOn(id);
+            pp.elementsPanel.FocusOn(id);
         }
     }
 }

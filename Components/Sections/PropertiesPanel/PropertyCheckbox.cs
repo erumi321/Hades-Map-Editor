@@ -12,7 +12,7 @@ namespace Hades_Map_Editor.PropertiesSection
     {
         CheckBox checkBox;
         bool canEdit;
-        public PropertyCheckbox(string label, bool edit = false) : base(label)
+        public PropertyCheckbox(PropertiesPanel parent, string label, bool edit = false) : base(parent, label)
         {
             canEdit = edit;
             Initialize();

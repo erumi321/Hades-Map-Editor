@@ -1,6 +1,5 @@
 ﻿using Hades_Map_Editor.Data;
 using Hades_Map_Editor.Managers;
-using Hades_Map_Editor.MapSection;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,18 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
-namespace Hades_Map_Editor.Sections
+namespace Hades_Map_Editor.MapSection
 {
     public class MapPanel : Panel, IComponent, Focusable
     {
         private MapCanvas canvas;
-        private ProjectData data;
-        private MenuStrip topMenu;
-        private ToolStripMenuItem zoomIn, zoomOut;
-        public MapPanel(ProjectData data)
+        private MapToolStrip mts;
+        private ProjectPage parent;
+        public MapPanel(ProjectPage projectPage)
         {
-            this.data = data;
+            parent = projectPage;
             Initialize();
             Populate();
         }
@@ -33,23 +32,10 @@ namespace Hades_Map_Editor.Sections
             BorderStyle = BorderStyle.FixedSingle;
             SetAutoScrollMargin(0, 50);
 
-            zoomOut = new ToolStripMenuItem();
-            zoomOut.Text = "+";
-            zoomOut.Click += (s, e) => MapPanel_ZoomOut_Click(s, e);
-
-            zoomIn = new ToolStripMenuItem();
-            zoomIn.Text = "-";
-            zoomIn.Click += (s, e) => MapPanel_ZoomIn_Click(s, e);
-
-            topMenu = new MenuStrip();
-            topMenu.Dock = DockStyle.Top;
-            topMenu.Items.Add(zoomIn);
-            topMenu.Items.Add(zoomOut);
-            Controls.Add(topMenu);
-
-            canvas = new MapCanvas();
+            canvas = new MapCanvas(this);
             Controls.Add(canvas);
 
+            mts = new MapToolStrip(canvas);
             /*canvas.MouseClick += new MouseEventHandler((o, e) => {
                 MouseEventArgs me = (MouseEventArgs)e;
                 System.Drawing.Point coordinates = me.Location;
@@ -84,14 +70,14 @@ namespace Hades_Map_Editor.Sections
 
         public void Populate()
         {
-            RefreshData();
         }
         public void UnFocus()
         {
         }
         public void FocusOn(int id)
         {
-            Obstacle obs = data.mapData.GetFromId(id);
+            
+            Obstacle obs = parent.GetData().mapData.GetFromId(id);
             //Size size = canvas;
             //Add rectangle
 
@@ -116,38 +102,15 @@ namespace Hades_Map_Editor.Sections
             canvas.Refresh();
         }
 
-        public void GetData()
+        public ProjectPage GetProjectPage()
         {
-                AssetsManager assetsManager = AssetsManager.GetInstance();
-                foreach (Obstacle obs in data.mapData.GetAllObstacles(true))
-                {
-                    Asset asset;
-                    if (assetsManager.GetAsset(obs.Name, out asset))
-                    {
-                        canvas.AddItem(obs);
-                    }
-                }
+            return parent;
         }
-
-        public void RefreshData()
+        public ProjectData GetData()
         {
-            GetData();
-            canvas.MapRefresh();
+            return GetProjectPage().GetData();
         }
+        public MapToolStrip GetMapToolStrip() { return mts; }
         // Actions
-        private void MapPanel_ZoomIn_Click(object sender, EventArgs e)
-        {
-            canvas.ZoomIn();
-            zoomIn.Enabled = canvas.CanZoomIn();
-            zoomOut.Enabled = canvas.CanZoomOut();
-            Console.WriteLine("Zoom In Clicked");
-        }
-        private void MapPanel_ZoomOut_Click(object sender, EventArgs e)
-        {
-            canvas.ZoomOut();
-            zoomIn.Enabled = canvas.CanZoomIn();
-            zoomOut.Enabled = canvas.CanZoomOut();
-            Console.WriteLine("Zoom Out Clicked");
-        }
     }
 }

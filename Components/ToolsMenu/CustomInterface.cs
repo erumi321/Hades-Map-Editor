@@ -14,7 +14,6 @@ namespace Hades_Map_Editor
     }
     public interface IDataFeed
     {
-        Task GetData();
         void RefreshData();
     }
     public interface IPaging

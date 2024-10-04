@@ -22,8 +22,9 @@ namespace Hades_Map_Editor
         {
             return name.Split('\\').Last();
         }
-        public void AppendAssets(Dictionary<AssetType, Dictionary<string, Asset>> assets)
+        public void AppendAssets(BiomeAssetData biomeAssetData)
         {
+            var assets = biomeAssetData.assetsData;
             if (subAtlases != null && subAtlases.Count > 0){
                 MapAssetCommon parent = new MapAssetCommon(this);
                 foreach (var assetSub in subAtlases)

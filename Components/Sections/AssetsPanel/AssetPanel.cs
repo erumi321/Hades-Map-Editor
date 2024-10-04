@@ -18,8 +18,9 @@ namespace Hades_Map_Editor.AssetsSection
         public bool isSelected = false;
         ContextMenu assetContextMenu;
         MenuItem create, replace;
-        public AssetPanel()
+        public AssetPanel(AssetsPanel assetPanel)
         {
+            Parent = assetPanel;
             Initialize();
             Populate();
             //properties = new ThingTextProperties(this, panel);
@@ -105,9 +106,8 @@ namespace Hades_Map_Editor.AssetsSection
         private void LeftMouseDown(System.Drawing.Point point)
         {
             isSelected = true;
-            FormManager formManager = FormManager.GetInstance();
-            formManager.GetAssetsPanel().GetCurrentTab().SelectAsset(this);
-            formManager.GetAssetsPanel().GetCurrentTab().SelectAsset(this);
+            ProjectPage pp = ((AssetsPanel)Parent).GetProjectPage();
+            pp.assetsPanel.GetCurrentTab().SelectAsset(this);
             Debug.WriteLine(name.Text);
             Refresh();
             Console.WriteLine("Left:" + point.ToString());

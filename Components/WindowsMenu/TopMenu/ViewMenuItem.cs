@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.TopMenu
 {
     public class ViewMenuItem : ToolStripMenuItem, IComponent
     {
@@ -19,11 +19,9 @@ namespace Hades_Map_Editor.Components
             zoomIn, zoomOut, normalSize,
             nextTab, previousTab,
             fullscreen;
-        HadesMapEditor app;
         public List<ToolStripMenuItem> filesRecentAction;
-        public ViewMenuItem(HadesMapEditor app) : base("View")
+        public ViewMenuItem() : base("View")
         {
-            this.app = app;
             Initialize();
             Populate();
             Dock = DockStyle.Top;

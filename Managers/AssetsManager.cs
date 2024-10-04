@@ -18,7 +18,7 @@ namespace Hades_Map_Editor.Managers
 {
     public class AssetsManager
     {
-        private Assets assets;
+        private AssetData assets;
         private static AssetsManager _instance;
         private bool processOngoing;
         public static AssetsManager GetInstance()
@@ -30,7 +30,7 @@ namespace Hades_Map_Editor.Managers
             return _instance;
         }
         private AssetsManager() {
-            SaveManager saveManager = SaveManager.GetInstance();
+            IOManager saveManager = IOManager.GetInstance();
             try
             {
                 assets = saveManager.LoadAssets();
@@ -38,16 +38,20 @@ namespace Hades_Map_Editor.Managers
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                assets = new Assets();
+                assets = new AssetData();
             }
         }
-        public Dictionary<string, Dictionary<AssetType, Dictionary<string, Asset>>> GetAssets()
+        public BiomeAssetData GetBiomeAssets(string selectedBiome)
         {
-            return assets.biomes;
+            if(selectedBiome != null && assets.biomeData.ContainsKey(selectedBiome))
+            {
+                return assets.biomeData[selectedBiome];
+            }
+            return null;
         }
         public List<string> Biomes()
         {
-            return new List<string>(assets.biomes.Keys);
+            return new List<string>(assets.biomeData.Keys);
         }
         public async Task CompileAssets()
         {
@@ -56,7 +60,7 @@ namespace Hades_Map_Editor.Managers
             {
                 FormManager formManager = FormManager.GetInstance();
                 formManager.GetBottomMenu().SetStatuts("Compiling assets...");
-                Assets assets = new Assets();
+                AssetData assets = new AssetData();
                 ConfigManager configManager = ConfigManager.GetInstance();
                 Console.WriteLine("Start Compilation");
                 var directories = Directory.GetDirectories(configManager.GetPath(ConfigType.ResourcesPath));
@@ -68,8 +72,7 @@ namespace Hades_Map_Editor.Managers
                         continue;
                     }
                     string directory = Path.GetFileName(fulldirectory);
-                    Dictionary<AssetType, Dictionary<string, Asset>> biomeAssets = new Dictionary<AssetType, Dictionary<string, Asset>>();
-                    assets.biomes.Add(directory, biomeAssets);
+                    assets.biomeData.Add(directory, new BiomeAssetData());
                     var assetFiles = Directory.GetFiles(manifestPath);
                     foreach (var assetFile in assetFiles)
                     {
@@ -77,12 +80,12 @@ namespace Hades_Map_Editor.Managers
                         {
                             string json = r.ReadToEnd();
                             var asset = JsonConvert.DeserializeObject<RawAtlasJson>(json);
-                            asset.AppendAssets(biomeAssets);
+                            asset.AppendAssets(new BiomeAssetData());
                             formManager.GetBottomMenu().SetStatuts(asset.name);
                         }
                     }
                 }
-                SaveManager saveManager = SaveManager.GetInstance();
+                IOManager saveManager = IOManager.GetInstance();
                 saveManager.SaveAssets(assets);
                 this.assets = assets;
                 processOngoing = false;
@@ -96,9 +99,9 @@ namespace Hades_Map_Editor.Managers
         }
         public bool GetAsset(string id, out Asset asset)
         {
-            foreach(var biome in assets.biomes)
+            foreach(var biome in assets.biomeData)
             {
-                foreach (var type in biome.Value)
+                foreach (var type in biome.Value.assetsData)
                 {
                     if (type.Value.ContainsKey(id))
                     {

@@ -1,4 +1,5 @@
 ﻿using Hades_Map_Editor.Data;
+using Hades_Map_Editor.ElementsSection;
 using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,9 @@ namespace Hades_Map_Editor.MapSection
         Rectangle selectRect;
         PictureBox canvas;
         ContextMenu canvasContextMenu;
-        public MapCanvas()
+        public MapCanvas(MapPanel parent)
         {
+            Parent = parent;
             listOfLoadedAssets = new List<Obstacle>();
             Initialize();
             Populate();
@@ -145,17 +147,20 @@ namespace Hades_Map_Editor.MapSection
         }
         private void MapCanvas_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            // Create a local version of the graphics object for the PictureBox.
-            Graphics g = e.Graphics;
-            //AssetsManager assetsManager = AssetsManager.GetInstance();
-            g.DrawImage(currentImage, new PointF(0, 0));
-            // Create pen.
-            Pen blackPen = new Pen(System.Drawing.Color.White, 2);
-
-            // Draw rectangle to screen.
-            if(selectRect.X >= 0)
+            if (currentImage != null)
             {
-                e.Graphics.DrawRectangle(blackPen, selectRect.X, selectRect.Y, selectRect.Width, selectRect.Height);
+                // Create a local version of the graphics object for the PictureBox.
+                Graphics g = e.Graphics;
+                //AssetsManager assetsManager = AssetsManager.GetInstance();
+                g.DrawImage(currentImage, new PointF(0, 0));
+                // Create pen.
+                Pen blackPen = new Pen(System.Drawing.Color.White, 2);
+
+                // Draw rectangle to screen.
+                if (selectRect.X >= 0)
+                {
+                    e.Graphics.DrawRectangle(blackPen, selectRect.X, selectRect.Y, selectRect.Width, selectRect.Height);
+                }
             }
         }
         public void SetSelect(Obstacle obs)
@@ -294,12 +299,12 @@ namespace Hades_Map_Editor.MapSection
         }
         private void MapCanvas_SelectObstacle(object sender, System.EventArgs e)
         {
-            FormManager formManager = FormManager.GetInstance();
             MenuItem item = (MenuItem)sender;
             int id = int.Parse(item.Text);
-            formManager.GetElementsPanel().FocusOn(id);
-            formManager.GetPropertiesPanel().FocusOn(id);
-            formManager.GetMapPanel().FocusOn(id);
+            var pp = (Parent as MapPanel).GetProjectPage();
+            pp.elementsPanel.FocusOn(id);
+            pp.propertiesPanel.FocusOn(id);
+            pp.mapPanel.FocusOn(id);
         }
         /*private void CanvasContextMenu_MouseClick(object sender, MouseEventArgs me)
         {

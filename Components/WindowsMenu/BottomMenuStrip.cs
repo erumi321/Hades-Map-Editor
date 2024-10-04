@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Hades_Map_Editor.Components
+namespace Hades_Map_Editor.BottomMenu
 {
     public class BottomMenuStrip: StatusStrip, IComponent
     {

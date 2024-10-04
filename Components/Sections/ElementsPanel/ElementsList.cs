@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static IronPython.Runtime.Profiler;
 
 namespace Hades_Map_Editor.ElementsSection
 {
@@ -14,9 +15,10 @@ namespace Hades_Map_Editor.ElementsSection
     {
         ProjectData projectData;
         public Dictionary<int, Obstacle> listBoxIndex;
-        public ElementsList(ProjectData projectData)
+        public ElementsPanel parent;
+        public ElementsList(ElementsPanel parent)
         {
-            this.projectData = projectData;
+            this.parent = parent;
             Initialize();
             Populate();
         }
@@ -36,7 +38,6 @@ namespace Hades_Map_Editor.ElementsSection
         }
         public void Action_SelectElement(object sender, EventArgs e)
         {
-            FormManager formManager = FormManager.GetInstance();
             string message = (string)((ListBox)sender).SelectedItem;
             if(message == null)
             {
@@ -44,9 +45,11 @@ namespace Hades_Map_Editor.ElementsSection
             }
             int id = int.Parse(message.Split(':')[0]);
             Console.WriteLine(id);
-            formManager.GetPropertiesPanel().FocusOn(id);
-            formManager.GetMapPanel().FocusOn(id);
-        }
+            var pp = parent.GetProjectPage();
+            pp.propertiesPanel.FocusOn(id);
+            pp.mapPanel.FocusOn(id);
+        }  
+        
         private void ElementsList_DrawItem(object sender, DrawItemEventArgs e)
         {
             // Draw the background of the ListBox control for each item.

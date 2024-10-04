@@ -16,7 +16,7 @@ namespace Hades_Map_Editor.PropertiesSection
         protected TextBox bTextBox, gTextBox, rTextBox, aTextBox;
         Label colorPreview;
         bool canEdit;
-        public PropertyColor(string label, bool edit = false) : base(label)
+        public PropertyColor(PropertiesPanel parent, string label, bool edit = false) : base(parent, label)
         {
             canEdit = edit;
             Initialize();
@@ -30,25 +30,25 @@ namespace Hades_Map_Editor.PropertiesSection
             Controls.Add(aTextBox);
 
             bTextBox = new TextBox();
-            bTextBox.Dock = DockStyle.Right;
+            //bTextBox.Dock = DockStyle.Right;
             bTextBox.Width = 32;
             bTextBox.Enabled = canEdit;
             Controls.Add(bTextBox);
 
             gTextBox = new TextBox();
-            gTextBox.Dock = DockStyle.Right;
+            //gTextBox.Dock = DockStyle.Right;
             gTextBox.Width = 32;
             gTextBox.Enabled = canEdit;
             Controls.Add(gTextBox);
 
             rTextBox = new TextBox();
-            rTextBox.Dock = DockStyle.Right;
+            //rTextBox.Dock = DockStyle.Right;
             rTextBox.Width = 32;
             rTextBox.Enabled = canEdit;
             Controls.Add(rTextBox);
 
             aTextBox = new TextBox();
-            aTextBox.Dock = DockStyle.Right;
+            //aTextBox.Dock = DockStyle.Right;
             aTextBox.Width = 32;
             aTextBox.Enabled = canEdit;
             Controls.Add(aTextBox);

@@ -13,6 +13,7 @@ namespace Hades_Map_Editor.Data
     {
         public string projectPath;
         public string name;
+        public string mapbiome;
         public MapData mapData;
 
         public ProjectData(string projectPath, MapData mapData)
