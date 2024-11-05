@@ -11,14 +11,14 @@ using System.Windows.Forms;
 
 namespace Hades_Map_Editor.AssetsSection
 {
-    public class AssetPanel : Panel, IComponent
+    public class AssetItem : Panel, IComponent
     {
         PictureBox picture;
         Label name;
         public bool isSelected = false;
         ContextMenu assetContextMenu;
         MenuItem create, replace;
-        public AssetPanel(AssetsPanel assetPanel)
+        public AssetItem(AssetsPanel assetPanel)
         {
             Parent = assetPanel;
             Initialize();
@@ -106,11 +106,11 @@ namespace Hades_Map_Editor.AssetsSection
         private void LeftMouseDown(System.Drawing.Point point)
         {
             isSelected = true;
-            ProjectPage pp = ((AssetsPanel)Parent).GetProjectPage();
+            /*ProjectPage pp = ((AssetsPanel)Parent).GetProjectPage();
             pp.assetsPanel.GetCurrentTab().SelectAsset(this);
             Debug.WriteLine(name.Text);
             Refresh();
-            Console.WriteLine("Left:" + point.ToString());
+            Console.WriteLine("Left:" + point.ToString());*/
             //AssetsManager assetsManager = AssetsManager.GetInstance();
         }
         private void RightMouseDown(System.Drawing.Point point)

@@ -70,6 +70,14 @@ namespace Hades_Map_Editor.MapSection
 
         public void Populate()
         {
+            foreach (Obstacle obs in GetData().mapData.GetAllObstacles())
+            {
+                if (obs.HasAsset() && obs.Active)
+                {
+                    canvas.AddItem(obs);
+                }
+            }
+            canvas.MapRefresh();
         }
         public void UnFocus()
         {
@@ -111,6 +119,7 @@ namespace Hades_Map_Editor.MapSection
             return GetProjectPage().GetData();
         }
         public MapToolStrip GetMapToolStrip() { return mts; }
+        public MapCanvas GetCanvas() { return canvas; }
         // Actions
     }
 }

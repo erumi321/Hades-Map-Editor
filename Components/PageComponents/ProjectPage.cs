@@ -38,7 +38,6 @@ namespace Hades_Map_Editor
 
         public void Populate()
         {
-
         }
         public ProjectData GetData() { return data; }
         private void CreateSplitContainers()
@@ -138,7 +137,71 @@ namespace Hades_Map_Editor
             // Add the GroupBox to the Form.
             tabPage.Controls.Add(groupBox3);
         }
-
-        
+        public bool IsAssetsPanelOpen()
+        {
+            return !rightSplitContainer.Panel2Collapsed;
+        }
+        public bool IsElementsPanelOpen()
+        {
+            return !(mainSplitContainer.Panel1Collapsed || leftSplitContainer.Panel2Collapsed);
+        }
+        public bool IsPropertiesPanelOpen()
+        {
+            return !(mainSplitContainer.Panel1Collapsed || leftSplitContainer.Panel1Collapsed);
+        }
+        public void ToggleAssetsPanel()
+        {
+            rightSplitContainer.Panel2Collapsed = !rightSplitContainer.Panel2Collapsed;
+        }
+        public void ToggleElementsPanel()
+        {
+            if (IsElementsPanelOpen()) {
+                if (IsPropertiesPanelOpen())
+                {
+                    leftSplitContainer.Panel2Collapsed = true;
+                }
+                else
+                {
+                    mainSplitContainer.Panel1Collapsed = true;
+                }
+            }
+            else
+            {
+                if (mainSplitContainer.Panel1Collapsed)
+                {
+                    mainSplitContainer.Panel1Collapsed = false;
+                }
+                else
+                {
+                    leftSplitContainer.Panel2Collapsed = false;
+                }
+            }
+           
+        }
+        public void TogglePropertiesPanel()
+        {
+            if (IsPropertiesPanelOpen())
+            {
+                if (IsElementsPanelOpen())
+                {
+                    leftSplitContainer.Panel1Collapsed = true;
+                }
+                else
+                {
+                    mainSplitContainer.Panel1Collapsed = true;
+                }
+            }
+            else
+            {
+                if (mainSplitContainer.Panel1Collapsed)
+                {
+                    mainSplitContainer.Panel1Collapsed = false;
+                }
+                else
+                {
+                    leftSplitContainer.Panel1Collapsed = false;
+                }
+            }
+        }
     }
 }

@@ -25,8 +25,8 @@ namespace Hades_Map_Editor.PropertiesSection
             listButton = new List<Button>();
             noneLabel = new Label();
             noneLabel.Text = "None";
-            noneLabel.Dock = DockStyle.Right;
-            Controls.Add(noneLabel);
+            noneLabel.Dock = DockStyle.Left;
+            fieldPanel.Controls.Add(noneLabel);
         }
         public new void Populate()
         {
@@ -48,11 +48,12 @@ namespace Hades_Map_Editor.PropertiesSection
                 if (listButton.Count <= index)
                 {
                     var newButton = new Button();
-                    newButton.Dock = DockStyle.Right;
+                    newButton.Dock = DockStyle.Top;
                     newButton.Visible = true;
                     newButton.Text = v.ToString();
+                    newButton.Height = 32;
                     newButton.Click += (s, e) => PropertyIDs_Click(s, e);
-                    Controls.Add(newButton);
+                    fieldPanel.Controls.Add(newButton);
                     listButton.Add(newButton);
                 }
                 else
@@ -63,12 +64,12 @@ namespace Hades_Map_Editor.PropertiesSection
                 }
                 index++;
             }
+            fieldPanel.Height = (value.Length > 0)?(value.Length * 32):32;
         }
         private void PropertyIDs_Click(object sender, EventArgs e)
         {
             Button button = (Button)sender;
             int id = Int32.Parse(button.Text);
-            FormManager formManager = FormManager.GetInstance();
             Console.WriteLine(id);
             var pp = GetProjectPage();
             pp.propertiesPanel.FocusOn(id);

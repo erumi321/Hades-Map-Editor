@@ -25,33 +25,29 @@ namespace Hades_Map_Editor.PropertiesSection
         }
         public new void Initialize()
         {
-            colorPreview = new Label();
-            colorPreview.BackColor = System.Drawing.Color.Transparent;
-            Controls.Add(aTextBox);
-
             bTextBox = new TextBox();
-            //bTextBox.Dock = DockStyle.Right;
+            bTextBox.Dock = DockStyle.Left;
             bTextBox.Width = 32;
             bTextBox.Enabled = canEdit;
-            Controls.Add(bTextBox);
+            fieldPanel.Controls.Add(bTextBox);
 
             gTextBox = new TextBox();
-            //gTextBox.Dock = DockStyle.Right;
+            gTextBox.Dock = DockStyle.Left;
             gTextBox.Width = 32;
             gTextBox.Enabled = canEdit;
-            Controls.Add(gTextBox);
+            fieldPanel.Controls.Add(gTextBox);
 
             rTextBox = new TextBox();
-            //rTextBox.Dock = DockStyle.Right;
+            rTextBox.Dock = DockStyle.Left;
             rTextBox.Width = 32;
             rTextBox.Enabled = canEdit;
-            Controls.Add(rTextBox);
+            fieldPanel.Controls.Add(rTextBox);
 
             aTextBox = new TextBox();
-            //aTextBox.Dock = DockStyle.Right;
+            aTextBox.Dock = DockStyle.Left;
             aTextBox.Width = 32;
             aTextBox.Enabled = canEdit;
-            Controls.Add(aTextBox);
+            fieldPanel.Controls.Add(aTextBox);
         }
         public new void Populate()
         {
@@ -63,29 +59,29 @@ namespace Hades_Map_Editor.PropertiesSection
             rTextBox.Text = string.Format("{0:0}", value.R);
             aTextBox.Text = string.Format("{0:0}", value.A);
 
-            BackColor = System.Drawing.Color.FromArgb(value.A, value.B, value.G, value.R);
+            fieldPanel.BackColor = System.Drawing.Color.FromArgb(value.A, value.B, value.G, value.R);
         }
         private void Property_Leave(object sender, EventArgs e)
         {
-            Console.WriteLine("1:"+Text);
+            Console.WriteLine("1:"+ fieldPanel.Text);
             try
             {
                 // Convert the text to a Double and determine if it is a negative number.
-                if (double.Parse(Text) < 0)
+                if (double.Parse(fieldPanel.Text) < 0)
                 {
                     // If the number is negative, display it in Red.
-                    ForeColor = System.Drawing.Color.Red;
+                    fieldPanel.ForeColor = System.Drawing.Color.Red;
                 }
                 else
                 {
                     // If the number is not negative, display it in Black.
-                    ForeColor = System.Drawing.Color.Black;
+                    fieldPanel.ForeColor = System.Drawing.Color.Black;
                 }
             }
             catch
             {
                 // If there is an error, display the text using the system colors.
-                ForeColor = System.Drawing.Color.White;
+                fieldPanel.ForeColor = System.Drawing.Color.White;
             }
         }
     }

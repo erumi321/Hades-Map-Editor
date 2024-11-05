@@ -17,6 +17,10 @@ namespace Hades_Map_Editor
         {
             return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         }
+        public static Image GetIcon(string name)
+        {
+            return Image.FromFile(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\Res\" + name+".png"); ;
+        }
         //public static string COMPILED_PATH = DATA_PATH + @"compiled\";
         //public static string EXPORT_PATH = DATA_PATH + @"export\";
         //public static string APPDATA_PATH = DATA_PATH + @"AppData\";

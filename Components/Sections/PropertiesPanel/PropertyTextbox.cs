@@ -23,10 +23,10 @@ namespace Hades_Map_Editor.PropertiesSection
         {
 
             textBox = new TextBox();
-            textBox.Dock = DockStyle.Right; 
-            textBox.Enabled = canEdit;
-            Leave += new EventHandler(Property_Leave);
-            Controls.Add(textBox);
+            //textBox.Dock = DockStyle.Fill; 
+            //textBox.Enabled = canEdit;
+            fieldPanel.Leave += new EventHandler(Property_Leave);
+            fieldPanel.Controls.Add(textBox);
             //Controls.Add(textBox);
 
             //BorderStyle = BorderStyle.FixedSingle;
@@ -41,25 +41,25 @@ namespace Hades_Map_Editor.PropertiesSection
         }
         private void Property_Leave(object sender, EventArgs e)
         {
-            Console.WriteLine("1:"+Text);
+            Console.WriteLine("1:"+ fieldPanel.Text);
             try
             {
                 // Convert the text to a Double and determine if it is a negative number.
-                if (double.Parse(Text) < 0)
+                if (double.Parse(fieldPanel.Text) < 0)
                 {
                     // If the number is negative, display it in Red.
-                    ForeColor = System.Drawing.Color.Red;
+                    fieldPanel.ForeColor = System.Drawing.Color.Red;
                 }
                 else
                 {
                     // If the number is not negative, display it in Black.
-                    ForeColor = System.Drawing.Color.Black;
+                    fieldPanel.ForeColor = System.Drawing.Color.Black;
                 }
             }
             catch
             {
                 // If there is an error, display the text using the system colors.
-                ForeColor = System.Drawing.Color.White;
+                fieldPanel.ForeColor = System.Drawing.Color.White;
             }
         }
     }

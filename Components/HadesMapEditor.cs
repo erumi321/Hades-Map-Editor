@@ -6,6 +6,7 @@ using Hades_Map_Editor.Managers;
 using Hades_Map_Editor.TopMenu;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,6 @@ namespace Hades_Map_Editor
         public TopMenuStrip topMenuStrip;
         public BottomMenuStrip bottomMenuStrip;
         public MainControl tabPage;
-
         //AssetPanel assetPanel;
         //MapPanel mapPanel;
         //ToolbarPanel toolbarPanel;

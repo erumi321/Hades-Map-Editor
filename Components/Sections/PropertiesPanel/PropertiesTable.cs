@@ -38,20 +38,18 @@ namespace Hades_Map_Editor.PropertiesSection
         }
         public void Initialize()
         {
-            BackColor = System.Drawing.Color.DarkGray;
-            //AutoScroll = true;
+            BackColor = System.Drawing.Color.LightGray;
             //AutoSize = true;
-            Dock = DockStyle.Fill;
             Name = "Properties";
 
             ColumnCount = 2;
             AutoScroll = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
             //attributePanel.Size = new System.Drawing.Size(280,500);
             //attributePanel.AutoSize = true;
             Dock = DockStyle.Fill;
             //BackColor = System.Drawing.Color.Red;
 
-            PropertiesPanel parent = Parent as PropertiesPanel;
             obstacleTitle = new PropertyTitle(parent, ".map_thing");
             activateAtRange = new PropertyCheckbox(parent, "Activate At Range");
             activationRange = new PropertyDouble(parent, "Activation Range");
@@ -93,49 +91,57 @@ namespace Hades_Map_Editor.PropertiesSection
             value = new PropertyDouble(parent, "Value");
 
             
-            Controls.Add(obstacleTitle);
-            /*Controls.Add(activateAtRange);
-            Controls.Add(activationRange);
-            Controls.Add(active);
-            Controls.Add(allowMovementReaction);
-            Controls.Add(ambient);
-            Controls.Add(angle);
-            Controls.Add(attachToID);
-            Controls.Add(attachedIDs);
-            Controls.Add(causesOcculsion);
-            Controls.Add(clutter);
-            Controls.Add(collision);
-            Controls.Add(color);
-            Controls.Add(comments);
-            Controls.Add(createsShadows);
-            Controls.Add(dataType);
-            Controls.Add(drawVfxOnTop);
-            Controls.Add(flipHorizontal);
-            Controls.Add(flipVertical);
-            //Controls.Add(groupNames);
-            //Controls.Add(helpTextId);
-            Controls.Add(hue);
-            Controls.Add(id);
-            Controls.Add(ignoreGridManager);
-            Controls.Add(invert);
-            Controls.Add(location);
-            Controls.Add(name);
-            Controls.Add(offsetZ);
-            Controls.Add(parallaxAmount);
-            //Controls.Add(points);
-            Controls.Add(saturation);
-            Controls.Add(scale);
-            Controls.Add(skewAngle);
-            Controls.Add(skewScale);
-            Controls.Add(sortIndex);
-            Controls.Add(stopsLight);
-            Controls.Add(tallness);
-            Controls.Add(useBoundsForSortArea);
-            Controls.Add(value);*/
+            Controls.Add(obstacleTitle.GetTitle());
+            SetCellPosition(obstacleTitle.GetTitle(), new TableLayoutPanelCellPosition(0, 0));
+            SetColumnSpan(obstacleTitle.GetTitle(), 2);
+
+            AddControls(activateAtRange);
+            AddControls(activationRange);
+            AddControls(active);
+            AddControls(allowMovementReaction);
+            AddControls(ambient);
+            AddControls(angle);
+            AddControls(attachToID);
+            AddControls(attachedIDs);
+            AddControls(causesOcculsion);
+            AddControls(clutter);
+            AddControls(collision);
+            AddControls(color);
+            AddControls(comments);
+            AddControls(createsShadows);
+            AddControls(dataType);
+            AddControls(drawVfxOnTop);
+            AddControls(flipHorizontal);
+            AddControls(flipVertical);
+            //AddControls(groupNames);
+            //AddControls(helpTextId);
+            AddControls(hue);
+            AddControls(id);
+            AddControls(ignoreGridManager);
+            AddControls(invert);
+            AddControls(location);
+            AddControls(name);
+            AddControls(offsetZ);
+            AddControls(parallaxAmount);
+            //AddControls(points);
+            AddControls(saturation);
+            AddControls(scale);
+            AddControls(skewAngle);
+            AddControls(skewScale);
+            AddControls(sortIndex);
+            AddControls(stopsLight);
+            AddControls(tallness);
+            AddControls(useBoundsForSortArea);
+            AddControls(value);
         }
         public void Populate()
         {
 
+        }
+        private void AddControls(IPropertyItem item)
+        {
+            Controls.Add(item.GetTitle());
+            Controls.Add(item.GetPanel());
         }
         public void FocusOn(int obsID)
         {

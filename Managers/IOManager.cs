@@ -62,7 +62,7 @@ namespace Hades_Map_Editor.Managers
             ConfigManager config = ConfigManager.GetInstance();
             config.AddProjectPath(projectData.projectPath);
         }
-        public ProjectData LoadProject(string path)
+        public ProjectData LoadProject(string path = "")
         {
             ProjectData projectData;
             if (path == "")
@@ -92,6 +92,10 @@ namespace Hades_Map_Editor.Managers
             {
                 throw new NoFileLoadedException();
             }
+            if (!File.Exists(path))
+            {
+                throw new NoFileLoadedException();
+            }
             using (StreamReader r = new StreamReader(path))
             {
                 string json = r.ReadToEnd();
@@ -118,8 +122,7 @@ namespace Hades_Map_Editor.Managers
                 catch (NoFileLoadedException e)
                 {
                     throw e;
-                }
-                         
+                }                         
             }
             using (StreamReader r = new StreamReader(mapPath))
             {

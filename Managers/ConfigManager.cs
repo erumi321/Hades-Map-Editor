@@ -139,12 +139,32 @@ namespace Hades_Map_Editor.Managers
                 SaveConfig();
             }
         }
+        public void RemoveProjectPath(string path)
+        {
+            int count = projectList.RemoveAll(v => { return v.GetPath() == path; });
+            if (count > 0)
+            {
+                SaveConfig();
+            } 
+        }
         public List<string> GetAllProjectPath()
         {
             List<string> result = new List<string>();
+            List<ProjectPath> toremove = new List<ProjectPath>();
             foreach (var project in projectList.Where(v => { return v.isOpen; }))
             {
-                result.Add(project.GetPath());
+                if (!File.Exists(project.GetPath()))
+                {
+                    toremove.Add(project);
+                }
+                else
+                {
+                    result.Add(project.GetPath());
+                }
+            }
+            foreach (var project in toremove)
+            {
+                projectList.Remove(project);
             }
             return result;
         }

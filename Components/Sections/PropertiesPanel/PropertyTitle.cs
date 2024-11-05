@@ -1,6 +1,7 @@
 ﻿using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,9 +19,9 @@ namespace Hades_Map_Editor.PropertiesSection
         }
         public new void Initialize()
         {
-            //nameLabel.Left = 50;
+            nameLabel.Left = 50;
             nameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-
+            
         }
         public new void Populate()
         {

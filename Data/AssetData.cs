@@ -53,6 +53,19 @@ namespace Hades_Map_Editor.Data
         {
             assetsData = new Dictionary<AssetType, Dictionary<string, Asset>> ();
         }
+        public List<Asset> GetAssets()
+        {
+            List<Asset> list = new List<Asset>();
+            foreach (var assetList in assetsData.Values)
+            {
+                list.AddRange(assetList.Values);
+            }
+            return list;
+        }
+        public List<Asset> GetAssetsByType(AssetType type)
+        {
+            return assetsData[type].Values.ToList();
+        }
     }
     public class Asset
     {

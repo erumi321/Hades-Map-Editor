@@ -26,13 +26,13 @@ namespace Hades_Map_Editor.PropertiesSection
         {
             noneLabel = new Label();
             noneLabel.Text = "None";
-            noneLabel.Dock = DockStyle.Right;
-            Controls.Add(noneLabel);
+            noneLabel.Dock = DockStyle.Left;
+            fieldPanel.Controls.Add(noneLabel);
 
             idButton = new Button();
-            idButton.Dock = DockStyle.Right;
+            idButton.Dock = DockStyle.Top;
             idButton.Visible = false;
-            Controls.Add(idButton);
+            fieldPanel.Controls.Add(idButton);
             //Controls.Add(textBox);
 
             //BorderStyle = BorderStyle.FixedSingle;

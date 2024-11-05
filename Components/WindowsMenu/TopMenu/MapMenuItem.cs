@@ -39,7 +39,7 @@ namespace Hades_Map_Editor.TopMenu
         {
             DropDownOpening += Self_Open;
             refreshMap.Click += RefreshMap_Action;
-            refreshMap.Enabled = false;
+            //refreshMap.Enabled = false;
             loadMapText.Click += LoadMapText_Action;
             loadMapText.Enabled = false;
             metadataView.Click += MetadataView_Action;
@@ -59,15 +59,16 @@ namespace Hades_Map_Editor.TopMenu
         {
             FormManager formManager = FormManager.GetInstance();
             var pp = (Parent as TopMenuStrip).GetMainControl().GetCurrentProjectPage();
-            pp.assetsPanel.RefreshData();
-            pp.elementsPanel.RefreshData();
+            pp.mapPanel.GetCanvas().MapRefresh();
+            //pp.assetsPanel.RefreshData();
+            //pp.elementsPanel.RefreshData();
         }
         private void Self_Open(object sender, EventArgs e)
         {
             Console.WriteLine("Map Clicked");
             FormManager formManager = FormManager.GetInstance();
             bool hasMapOpen = formManager.HasTabOpen();
-            refreshMap.Enabled = false;
+            //refreshMap.Enabled = false;
             //loadMapText.Enabled = hasMapOpen;
             //metadataView.Enabled = hasMapOpen;
         }

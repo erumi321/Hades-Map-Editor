@@ -5,6 +5,7 @@ using Microsoft.Scripting.Hosting;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -41,9 +42,13 @@ namespace Hades_Map_Editor.Managers
                 assets = new AssetData();
             }
         }
+        public void SetAssets(AssetData assets)
+        {
+            this.assets = assets;
+        }
         public BiomeAssetData GetBiomeAssets(string selectedBiome)
         {
-            if(selectedBiome != null && assets.biomeData.ContainsKey(selectedBiome))
+            if (selectedBiome != null && assets.biomeData.ContainsKey(selectedBiome))
             {
                 return assets.biomeData[selectedBiome];
             }
@@ -53,20 +58,27 @@ namespace Hades_Map_Editor.Managers
         {
             return new List<string>(assets.biomeData.Keys);
         }
-        public async Task CompileAssets()
+        public bool HasLoadedResources()
         {
-            processOngoing = true;
+            ConfigManager configManager = ConfigManager.GetInstance();
+            return Directory.GetDirectories(configManager.GetPath(ConfigType.ResourcesPath)).Any();
+        }
+        public bool HasAssets()
+        {
+            return assets.biomeData.Count > 0;
+        }
+        /*public void CompileAssets()
+        {
+            FormManager formManager = FormManager.GetInstance();
             var task = Task.Factory.StartNew(() =>
             {
-                FormManager formManager = FormManager.GetInstance();
-                formManager.GetBottomMenu().SetStatuts("Compiling assets...");
                 AssetData assets = new AssetData();
                 ConfigManager configManager = ConfigManager.GetInstance();
                 Console.WriteLine("Start Compilation");
                 var directories = Directory.GetDirectories(configManager.GetPath(ConfigType.ResourcesPath));
                 foreach (var fulldirectory in directories)
                 {
-                    string manifestPath = fulldirectory +@"\manifest";
+                    string manifestPath = fulldirectory + @"\manifest";
                     if (!Directory.Exists(manifestPath))
                     {
                         continue;
@@ -88,18 +100,17 @@ namespace Hades_Map_Editor.Managers
                 IOManager saveManager = IOManager.GetInstance();
                 saveManager.SaveAssets(assets);
                 this.assets = assets;
-                processOngoing = false;
+                formManager.EndLoading();
                 formManager.GetBottomMenu().SetStatuts("Compiling - done");
             });
-            await task;
-        }
+        }*/
         public void LoadImages()
         {
             assets.LoadImages();
         }
         public bool GetAsset(string id, out Asset asset)
         {
-            foreach(var biome in assets.biomeData)
+            foreach (var biome in assets.biomeData)
             {
                 foreach (var type in biome.Value.assetsData)
                 {
@@ -113,38 +124,85 @@ namespace Hades_Map_Editor.Managers
             asset = null;
             return false;
         }
-        public async void FetchAssetsFromGameAsync()
+        
+        /*public List<string> GetAllNames()
+        {
+            return assets.Where((v)=> { return v.Value.GetAssetType() == MapAssetType.Tileset; }).ToDictionary(i => i.Key, i => i.Value).Keys.ToList().GetRange(0,5);
+        }
+        public Image GetImage(string subAssetName)
+        {
+            return assets[subAssetName].GetImage();
+        }*/
+        /*public Image CreateImage()
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(@"C:\SomeFolder\Images\image.png");
+            bitmap.DecodePixelWidth = 100;
+            bitmap.EndInit();
+            return new Image { Source = bitmap, Margin = new Thickness(0), Stretch = Stretch.None, ClipToBounds = false };
+        }*/
+    }
+    public class FetchAssetWorker : BackgroundWorker
+    {
+        AssetsManager am;
+        int doneProcess, maxProcess;
+        public FetchAssetWorker() : base()
+        {
+            am = AssetsManager.GetInstance();
+            DoWork += DoWorkFunc;
+            RunWorkerCompleted += RunWorkerCompletedFunc;
+        }
+        private void DoWorkFunc(object sender, DoWorkEventArgs e)
+        {
+            FetchAssetsFromGameAsync();
+        }
+        private void RunWorkerCompletedFunc(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //FormManager.GetInstance().EndLoading();
+        }
+        private async void FetchAssetsFromGameAsync()
         {
             try
             {
-                processOngoing = true;
+                doneProcess = 0;
                 FormManager formManager = FormManager.GetInstance();
-                formManager.GetBottomMenu().SetStatuts("Fetch assets...");
+                //formManager.GetBottomMenu().SetStatuts("Fetch assets...");
                 ConfigManager configManager = ConfigManager.GetInstance();
+                List<string> packages = new List<string>(){"Tartarus","Asphodel"};
+                maxProcess = packages.Count;
                 List<Task> tasks = new List<Task>();
-                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Tartarus",configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
+                foreach (string packageName in packages)
+                {
+                    tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), packageName, configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)).ContinueWith(taskid => { UpdateDialogMessage(packageName); }));
+                }
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Erebus", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Asphodel", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Elysium", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Surface", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Styx", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                
-                Task task =  Task.WhenAll(tasks);
+
+                Task task = Task.WhenAll(tasks);
                 await task.ContinueWith(allTask =>
                 {
-                    formManager.GetBottomMenu().SetStatuts("Fetch assets - done");
-                    Console.WriteLine("Finished!");
-                    processOngoing = false;
+                    formManager.EndLoading();
                 });
+
             }
             catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 
         }
-
-        
-        private async Task<int> RunProcessAsync(string pythonPath, string packageName, string hadesPath, string resourcesPath)
+        private void UpdateDialogMessage(string packageName)
         {
-            if (!Directory.Exists(resourcesPath + @"\"+packageName))
+            doneProcess += 1;
+            FormManager formManager = FormManager.GetInstance();
+            formManager.ChangeLoadingStatus(packageName, doneProcess, maxProcess);
+        }
+
+
+        private Task<int> RunProcessAsync(string pythonPath, string packageName, string hadesPath, string resourcesPath)
+        {
+            if (!Directory.Exists(resourcesPath + @"\" + packageName))
             {
                 Directory.CreateDirectory(resourcesPath + @"\" + packageName);
             }
@@ -166,30 +224,73 @@ namespace Hades_Map_Editor.Managers
             };
             process.Exited += (sender, args) =>
             {
+                process.WaitForExit();
                 tcs.SetResult(process.ExitCode);
                 process.Dispose();
             };
 
             process.Start();
 
-            return await tcs.Task;
+            return tcs.Task;
         }
-        /*public List<string> GetAllNames()
+    }
+    public class CompileAssetWorker : BackgroundWorker{
+        AssetsManager am;
+        int doneProcess, maxProcess;
+        public CompileAssetWorker() : base()
         {
-            return assets.Where((v)=> { return v.Value.GetAssetType() == MapAssetType.Tileset; }).ToDictionary(i => i.Key, i => i.Value).Keys.ToList().GetRange(0,5);
+            am = AssetsManager.GetInstance();
+            DoWork += DoWorkFunc;
+            RunWorkerCompleted += RunWorkerCompletedFunc;
         }
-        public Image GetImage(string subAssetName)
+        private void DoWorkFunc(object sender, DoWorkEventArgs e)
         {
-            return assets[subAssetName].GetImage();
-        }*/
-        /*public Image CreateImage()
+            CompileAsset();
+        }
+        private void RunWorkerCompletedFunc(object sender, RunWorkerCompletedEventArgs e)
         {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(@"C:\SomeFolder\Images\image.png");
-            bitmap.DecodePixelWidth = 100;
-            bitmap.EndInit();
-            return new Image { Source = bitmap, Margin = new Thickness(0), Stretch = Stretch.None, ClipToBounds = false };
-        }*/
-    }   
+            FormManager formManager = FormManager.GetInstance();
+            formManager.EndLoading();
+        }
+        private void CompileAsset()
+        {
+            doneProcess = 0;
+            maxProcess = 0;
+            FormManager formManager = FormManager.GetInstance();
+            AssetData assets = new AssetData();
+            ConfigManager configManager = ConfigManager.GetInstance();
+            var directories = Directory.GetDirectories(configManager.GetPath(ConfigType.ResourcesPath));
+            foreach (var fulldirectory in directories)
+            {
+                string manifestPath = fulldirectory + @"\manifest";
+                if (!Directory.Exists(manifestPath))
+                {
+                    continue;
+                }
+                string directory = Path.GetFileName(fulldirectory);
+                assets.biomeData.Add(directory, new BiomeAssetData());
+                var assetFiles = Directory.GetFiles(manifestPath);
+                maxProcess += assetFiles.Length;
+                foreach (var assetFile in assetFiles)
+                {
+                    using (StreamReader r = new StreamReader(assetFile))
+                    {
+                        string json = r.ReadToEnd();
+                        var asset = JsonConvert.DeserializeObject<RawAtlasJson>(json);
+                        asset.AppendAssets(assets.biomeData[directory]);
+                    }
+                    UpdateDialogMessage(directory +"["+ Path.GetFileNameWithoutExtension(assetFile).Split('.')[0] + "]");
+                }
+            }
+            IOManager saveManager = IOManager.GetInstance();
+            saveManager.SaveAssets(assets);
+            am.SetAssets(assets);
+        }
+        private void UpdateDialogMessage(string packageName)
+        {
+            doneProcess += 1;
+            FormManager formManager = FormManager.GetInstance();
+            formManager.ChangeLoadingStatus(packageName, doneProcess, maxProcess);
+        }
+    }
 }

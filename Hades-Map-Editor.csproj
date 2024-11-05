@@ -96,6 +96,15 @@
     <Compile Include="Components\PageComponents\ProjectPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\Sections\AssetsPanel\AssetMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\AssetsPanel\EmptyAssetPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Sections\AssetsPanel\AssetTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\Sections\ElementsPanel\ElementsList.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -111,58 +120,36 @@
     <Compile Include="Components\Sections\MapToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertiesListView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Components\Sections\PropertiesPanel\PropertiesTable.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\IPropertyItem.cs" />
     <Compile Include="Components\Sections\SubPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\Sections\PagingComponent.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\Sections\AssetsPanel\AssetTab.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\AssetsPanel\AssetPanel.cs">
+    <Compile Include="Components\Sections\AssetsPanel\AssetItem.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\Sections\AssetsPanel\AssetsPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyColor.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyAttachedIDs.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyLocation.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyID.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyTitle.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyTextbox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyInt.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyItem.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyDouble.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Sections\PropertiesPanel\PropertyCheckbox.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyColor.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyAttachedIDs.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyLocation.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyID.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyTitle.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyTextbox.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyInt.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyItem.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyDouble.cs" />
+    <Compile Include="Components\Sections\PropertiesPanel\PropertyCheckbox.cs" />
     <Compile Include="Components\Sections\PropertiesPanel\PropertiesPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\ToolsMenu\TransparentPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\ToolsMenu\FlatButton.cs">
@@ -176,6 +163,9 @@
     <Compile Include="Components\ToolsMenu\EditTool.cs" />
     <Compile Include="Components\WindowsMenu\BottomMenuStrip.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\WindowsMenu\LoadingDialog\LoadingDialog.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Components\WindowsMenu\Parameters\ConfigurationLink.cs">
       <SubType>Component</SubType>
@@ -316,6 +306,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Res\browse_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Res\add_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Res\close_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Res\save_button.png">

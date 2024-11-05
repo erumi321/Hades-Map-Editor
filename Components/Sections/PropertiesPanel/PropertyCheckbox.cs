@@ -25,7 +25,7 @@ namespace Hades_Map_Editor.PropertiesSection
             checkBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             checkBox.Enabled = canEdit;
             //checkBox.Dock = DockStyle.Left;
-            Controls.Add(checkBox);
+            fieldPanel.Controls.Add(checkBox);
         }
         public new void Populate()
         {

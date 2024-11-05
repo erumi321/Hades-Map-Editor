@@ -10,18 +10,19 @@ using System.Windows.Forms;
 
 namespace Hades_Map_Editor.AssetsSection
 {
-    public class AssetTab : TabPage, IComponent, IPaging
+    public class AssetTable : Panel, IComponent, IPaging
     {
         private List<Asset> assets;
-        private int currentPage;
-        private int maxRow = 5, maxColumn = 7, wsize = 100, hsize = 120;
-        public AssetPanel[] assetsPanel;
-        public PagingComponent paging;
-        private AssetPanel currentAsset;
+        private int currentPage, maxPage;
+        private int maxRow, maxColumn, wsize = 100, hsize = 120;
+        public AssetItem[] assetsPanel;
+        private AssetItem currentAsset;
 
-        public AssetTab(AssetsPanel assetsPanel)
+        public AssetTable(AssetsPanel assetsPanel, int maxRow = 5, int maxColumn = 7)
         {
             Parent = assetsPanel;
+            this.maxRow = maxRow;
+            this.maxColumn = maxColumn;
             Initialize();
             Populate();
             //properties = new ThingTextProperties(this, panel);
@@ -29,19 +30,24 @@ namespace Hades_Map_Editor.AssetsSection
         public void Initialize()
         {
             currentPage = -1;
-            assetsPanel = new AssetPanel[maxRow * maxColumn];
+            AutoSize = true;
+            Dock = DockStyle.Fill;
+            BackColor = Color.Aquamarine;
+            assetsPanel = new AssetItem[maxRow * maxColumn];
             
             for (int i = 0; i < assetsPanel.Length; i++)
             {
-                AssetPanel panel = new AssetPanel((AssetsPanel)Parent);
+                AssetItem panel = new AssetItem((AssetsPanel)Parent);
                 assetsPanel[i] = panel;
                 panel.Size = new System.Drawing.Size(wsize, hsize);
                 panel.Location = new System.Drawing.Point((i % maxRow) * wsize, (i / maxRow) * hsize);
                 panel.BackColor = (i % 2 == 0) ? System.Drawing.Color.CadetBlue : System.Drawing.Color.Cornsilk;
                 Controls.Add(panel);
             }
-            paging = new PagingComponent(this);
-            Controls.Add(paging);
+        }
+        public int GetMaxPage()
+        {
+            return maxPage;
         }
         public void Populate()
         {
@@ -49,10 +55,13 @@ namespace Hades_Map_Editor.AssetsSection
         public void LoadItems(List<Asset> assets)
         {
             this.assets = assets;
-            GoToPage(0);            
+            currentPage = -1;
+            maxPage = (assetsPanel.Length / (maxRow * maxColumn));
+            GoToPage(1);            
         }
         public void GoToPage(int pageNumber)
         {
+            pageNumber = pageNumber-1;
             if (pageNumber == currentPage)
             {
                 return;
@@ -72,14 +81,13 @@ namespace Hades_Map_Editor.AssetsSection
                     assetsPanel[i].Visible = false;
                 }
             }
-            paging.GoToPage(currentPage, assets.Count/ pageCapacity);
         }
 
         public int GetCurrentPage()
         {
             return currentPage;
         }
-        public void SelectAsset(AssetPanel selected)
+        public void SelectAsset(AssetItem selected)
         {
             if(currentAsset != null)
             {

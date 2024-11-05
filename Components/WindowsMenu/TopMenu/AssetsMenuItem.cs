@@ -33,10 +33,10 @@ namespace Hades_Map_Editor.TopMenu
             DropDownItems.Add(fetch);
             DropDownItems.Add(compile);
             DropDownItems.Add(biomes);
-            foreach (string biome in AssetsManager.GetInstance().Biomes())
+            /*foreach (string biome in AssetsManager.GetInstance().Biomes())
             {
                 biomes.DropDownItems.Add(new ToolStripMenuItem(biome));
-            }
+            }*/
         }
 
         public void Populate()
@@ -64,35 +64,21 @@ namespace Hades_Map_Editor.TopMenu
 
         private void FetchAssets_Action(object sender, EventArgs e)
         {
-            AssetsManager assetsManager = AssetsManager.GetInstance();
-            try
-            {
-                assetsManager.FetchAssetsFromGameAsync();
-            }
-            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
-
-            //app.tabPageController.CreateNewTabPage(app.form, "New file");
-        }
-        private void CompileResources_Action(object sender, EventArgs e)
-        {
-            AssetsManager assetsManager = AssetsManager.GetInstance();
             FormManager formManager = FormManager.GetInstance();
             try
             {
-                Task compileTask = assetsManager.CompileAssets();
-                compileTask.ContinueWith(task =>
-                {
-                    if (formManager.HasTabOpen())
-                    {
-                        //formManager.GetAssetsPanel().RefreshData();
-                        //formManager.GetElementsPanel().RefreshData();
-                    }
-                });
-                //FormManager.GetInstance().GetAssetsPanel().Refresh();
+                formManager.StartLoading(new FetchAssetWorker());
             }
             catch (Exception ex) { Console.WriteLine(ex.ToString()); }
-
-            //app.tabPageController.CreateNewTabPage(app.form, "New file");
+        }
+        private void CompileResources_Action(object sender, EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+            try
+            {
+                formManager.StartLoading(new CompileAssetWorker());
+            }
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
         }
         private void Self_Open(object sender, EventArgs e)
         {

@@ -43,6 +43,7 @@ namespace Hades_Map_Editor.ElementsSection
                 listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
                     }
             listBox.EndUpdate();
+            closeButton.Click += CloseButton_Click;
         }
 
         public void UnFocus()
@@ -58,6 +59,10 @@ namespace Hades_Map_Editor.ElementsSection
         {
             listBox.Items.Clear();
             //_ = GetData();
+        }
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            parent.ToggleElementsPanel();
         }
     }
 }

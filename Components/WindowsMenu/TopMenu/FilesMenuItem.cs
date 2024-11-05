@@ -109,7 +109,6 @@ namespace Hades_Map_Editor.TopMenu
             closeAll.Enabled = false;
             parameters.Click += Parameters_Action;
             exit.Click += Exit_Action;
-            exit.Enabled = false;
         }
         private void NewHadesProject_Action(object sender, EventArgs e)
         {

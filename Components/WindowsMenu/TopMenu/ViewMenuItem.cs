@@ -112,20 +112,12 @@ namespace Hades_Map_Editor.TopMenu
 
         public void Populate()
         {
-            showAssetWindow.Click += Example_Action;
-            showAssetWindow.Checked = true;
-            showAssetWindow.Enabled = false;
-            showElementWindow.Click += Example_Action;
-            showElementWindow.Checked = true;
-            showElementWindow.Enabled = false;
-            showPropertyWindow.Click += Example_Action;
-            showPropertyWindow.Checked = true;
-            showPropertyWindow.Enabled = false;
-            resetViews.Click += Example_Action;
-            resetViews.Enabled = false;
-            showFx.Click += Example_Action;
-            showFx.Checked = true;
-            showFx.Enabled = false;
+            DropDownOpening += Self_Open;
+            showAssetWindow.Click += ShowAssetWindow_Click;
+            showElementWindow.Click += ShowElementWindow_Click;
+            showPropertyWindow.Click += ShowPropertyWindow_Click;
+            //resetViews.Click += ResetViews_Click;
+            showFx.Click += ResetViews_Click;
             showTilesets.Click += Example_Action;
             showTilesets.Checked = true;
             showTilesets.Enabled = false;
@@ -169,13 +161,48 @@ namespace Hades_Map_Editor.TopMenu
 
         private void ResetViews_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            FormManager formManager = FormManager.GetInstance();
+        }
+
+        private void ShowAssetWindow_Click(object sender, System.EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+            ProjectPage pp = formManager.GetCurrentTab();
+            pp.ToggleAssetsPanel();
+            showAssetWindow.Checked = pp.IsAssetsPanelOpen();
+        }
+
+        private void ShowElementWindow_Click(object sender, System.EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+            ProjectPage pp = formManager.GetCurrentTab();
+            pp.ToggleElementsPanel();
+            showAssetWindow.Checked = pp.IsElementsPanelOpen();
+        }
+
+        private void ShowPropertyWindow_Click(object sender, System.EventArgs e)
+        {
+            FormManager formManager = FormManager.GetInstance();
+            ProjectPage pp = formManager.GetCurrentTab();
+            pp.TogglePropertiesPanel();
+            showAssetWindow.Checked = pp.IsPropertiesPanelOpen();
         }
 
         private void Example_Action(object sender, System.EventArgs e)
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
             Console.WriteLine("Click:"+ item.Name);
+        }
+        private void Self_Open(object sender, EventArgs e)
+        {
+            Console.WriteLine("Map Clicked");
+            FormManager formManager = FormManager.GetInstance();
+            ProjectPage pp = formManager.GetCurrentTab();
+            showAssetWindow.Checked = pp.IsAssetsPanelOpen();
+            showElementWindow.Checked = pp.IsElementsPanelOpen();
+            showPropertyWindow.Checked = pp.IsPropertiesPanelOpen();
+            //loadMapText.Enabled = hasMapOpen;
+            //metadataView.Enabled = hasMapOpen;
         }
     }
 }

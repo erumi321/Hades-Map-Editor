@@ -13,9 +13,11 @@ namespace Hades_Map_Editor.AssetsSection
 {
     public class AssetsPanel : SubPanel, IDataFeed, IComponent
     {
-        private Label loadingLabel;
-        public Dictionary<string, AssetTab> assetsTab;
-        public TabControl assetsTabControl;
+        EmptyAssetPanel emptyAssetPanel;
+        AssetMenu assetMenu;
+        AssetTable assetTable;
+        PagingComponent paging;
+        private int maxRow = 5, maxColumn = 7, wsize = 100, hsize = 120;
 
         public AssetsPanel(ProjectPage projectPage):base(projectPage,"Hades Assets")
         {
@@ -24,67 +26,49 @@ namespace Hades_Map_Editor.AssetsSection
         }
         public void Initialize()
         {
-            BackColor = System.Drawing.Color.White;
-            AutoScroll = true;
-            Dock = DockStyle.Fill;
-
-            loadingLabel = new Label();
-            loadingLabel.Text = "Loading...";
-            loadingLabel.AutoSize = false;
-            loadingLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            loadingLabel.Dock = DockStyle.Fill;
-            loadingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            Controls.Add(loadingLabel);
-
-            assetsTabControl = new TabControl();
-            assetsTabControl.Dock = DockStyle.Fill;
-            Controls.Add(assetsTabControl);
             
-            //BorderStyle = BorderStyle.FixedSingle;
-            //SetAutoScrollMargin(0, 0);
+            assetMenu = new AssetMenu(this);
+            assetTable = new AssetTable(this);
+            emptyAssetPanel = new EmptyAssetPanel(this);
+            paging = new PagingComponent(assetTable);
+
+            BottomPanel.Controls.Add(paging);
+            TopPanel.Controls.Add(assetMenu);
+            ContentPanel.Controls.Add(emptyAssetPanel);
+            ContentPanel.Controls.Add(assetTable);
         }
         public void Populate()
         {
-            loadingLabel.Text = "Loading...";
-            loadingLabel.Visible = true;
-            AssetsManager assetsManager = AssetsManager.GetInstance();
-            string currentbiome = GetData().mapbiome;
-            var biomeData = assetsManager.GetBiomeAssets(currentbiome);
-            if (biomeData != null && biomeData.assetsData.Count != 0)
-            {
-                int count = 0;
-                foreach (var assets in biomeData.assetsData)
-                {
-                    if (assets.Key == AssetType.Tilesets)
-                    {
-                        AssetTab assetTab = new AssetTab(this);
-                        assetTab.Text = currentbiome;
-                        assetTab.LoadItems(assets.Value.Values.ToList());
-
-                        assetsTabControl.Controls.Add(assetTab);
-                        count++;
-                    }
-                    if (count > 10)
-                    {
-                        break;
-                    }
-                }
-                loadingLabel.Visible = false;
-            }
-            else
-            {
-                loadingLabel.Text = "No Assets detected. \n Try compiling.";
-                loadingLabel.Visible = true;
-            }
-        }
-        public AssetTab GetCurrentTab()
-        {
-            return assetsTabControl.SelectedTab as AssetTab;
+            RefreshData();
+            closeButton.Click += CloseButton_Click;
+            assetTable.Visible = false;
         }
 
         public void RefreshData()
         {
-
+            AssetsManager am = AssetsManager.GetInstance();
+            if (am.HasAssets())
+            {
+                emptyAssetPanel.Visible = false;
+            }
+            else
+            {
+                emptyAssetPanel.Visible = true;
+            }
+            assetMenu.RefreshData();
+        }
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            parent.ToggleAssetsPanel();
+        }
+        public void ShowAssetTable(string biomeName)
+        {
+            AssetsManager am = AssetsManager.GetInstance();
+            List<Asset> list = am.GetBiomeAssets(biomeName).GetAssetsByType(AssetType.Tilesets);
+            paging.SetupPaging((int)Math.Ceiling((double)list.Count / (maxRow * maxColumn)));
+            assetTable.LoadItems(list);
+            assetTable.Visible = true;
+            emptyAssetPanel.Visible = false;
         }
         /*public void Select(int selectedId)
 {
