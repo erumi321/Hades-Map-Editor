@@ -14,11 +14,13 @@ namespace Hades_Map_Editor
     {
         string windowTitle;
         protected ProjectPage parent;
+        protected ProjectData data;
         public GroupBox ContentPanel;
         public Panel TopPanel, BottomPanel;
         private Panel TitlePanel, UpperPanel;
         Label title;
         protected Button closeButton;
+        
 
         public SubPanel(ProjectPage pp, string windowTitle)
         {

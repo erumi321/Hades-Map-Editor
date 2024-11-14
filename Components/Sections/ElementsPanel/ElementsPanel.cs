@@ -13,7 +13,8 @@ namespace Hades_Map_Editor.ElementsSection
     {
         public ElementsList listBox;
         public Dictionary<int, int> listBoxIndex;
-        public Panel headerPanel;
+        public ElementsMenu headerPanel;
+
         public ElementsPanel(ProjectPage parent): base(parent,"Map Elements")
         {
             Parent = parent;
@@ -24,10 +25,7 @@ namespace Hades_Map_Editor.ElementsSection
         {
             listBoxIndex = new Dictionary<int, int>();
             listBox = new ElementsList(this);
-
-            headerPanel = new Panel();
-            headerPanel.Size = new Size(10, 10);
-            headerPanel.BackColor = Color.LightSeaGreen;
+            headerPanel = new ElementsMenu(this);
 
             TopPanel.Controls.Add(headerPanel);
             ContentPanel.Controls.Add(listBox);
@@ -35,14 +33,8 @@ namespace Hades_Map_Editor.ElementsSection
 
         public void Populate()
         {
-            var data = GetData();
-            //WRITING A FILE OR SOME SUCH THINGAMAGIG
-            listBox.BeginUpdate();
-                    foreach (var obstacle in data.mapData.GetAllObstacles())
-                    {
-                listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
-                    }
-            listBox.EndUpdate();
+            RefreshData();
+            FilterList(false,true);
             closeButton.Click += CloseButton_Click;
         }
 
@@ -57,8 +49,20 @@ namespace Hades_Map_Editor.ElementsSection
 
         public void RefreshData()
         {
+            data = GetData();
+        }
+        public void FilterList(bool hideAssets = false, bool hideUnassigned = false)
+        {
             listBox.Items.Clear();
+            //WRITING A FILE OR SOME SUCH THINGAMAGIG
+            listBox.BeginUpdate();
+            foreach (var obstacle in data.mapData.GetAllObstacles())
+            {
+                listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
+            }
+            listBox.EndUpdate();
             //_ = GetData();
+
         }
         private void CloseButton_Click(object sender, EventArgs e)
         {

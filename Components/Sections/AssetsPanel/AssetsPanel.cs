@@ -42,6 +42,8 @@ namespace Hades_Map_Editor.AssetsSection
             RefreshData();
             closeButton.Click += CloseButton_Click;
             assetTable.Visible = false;
+
+            ShowAssetTable(assetMenu.selectBiomeDropdown.Items[0].ToString());
         }
 
         public void RefreshData()
@@ -63,6 +65,10 @@ namespace Hades_Map_Editor.AssetsSection
         }
         public void ShowAssetTable(string biomeName)
         {
+            if(assetMenu.selectBiomeDropdown.SelectedItem == null || assetMenu.selectBiomeDropdown.SelectedItem.ToString() != biomeName)
+            {
+                assetMenu.selectBiomeDropdown.SelectedItem = biomeName;
+            }
             AssetsManager am = AssetsManager.GetInstance();
             List<Asset> list = am.GetBiomeAssets(biomeName).GetAssetsByType(AssetType.Tilesets);
             paging.SetupPaging((int)Math.Ceiling((double)list.Count / (maxRow * maxColumn)));

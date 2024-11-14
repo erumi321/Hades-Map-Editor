@@ -21,6 +21,7 @@ namespace Hades_Map_Editor
         public AssetsPanel assetsPanel;
         public ElementsPanel elementsPanel;
         public MapPanel mapPanel;
+        public bool filterUnassigned = false;
         public ProjectPage(ProjectData data)
         {
             this.data = data;

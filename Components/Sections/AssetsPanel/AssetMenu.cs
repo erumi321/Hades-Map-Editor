@@ -12,7 +12,7 @@ namespace Hades_Map_Editor.AssetsSection
 {
     public class AssetMenu : Panel, IDataFeed, IComponent
     {
-        ComboBox selectBiomeDropdown;
+        public ComboBox selectBiomeDropdown;
         Label selectBiomeLabel;
         Button addButton;
         AssetsPanel parent;

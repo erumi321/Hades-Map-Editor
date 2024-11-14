@@ -105,6 +105,9 @@
     <Compile Include="Components\Sections\AssetsPanel\AssetTable.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\Sections\ElementsPanel\ElementsMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\Sections\ElementsPanel\ElementsList.cs">
       <SubType>Component</SubType>
     </Compile>

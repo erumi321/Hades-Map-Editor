@@ -29,6 +29,10 @@ namespace Hades_Map_Editor.AssetsSection
         {
             name = new Label();
             name.Dock = DockStyle.Bottom;
+
+            //name.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Regular);
+            name.AutoSize = true;
+            name.BackColor = Color.AntiqueWhite;
             picture = new PictureBox();
             picture.SizeMode = PictureBoxSizeMode.AutoSize;
             BorderStyle = BorderStyle.FixedSingle;

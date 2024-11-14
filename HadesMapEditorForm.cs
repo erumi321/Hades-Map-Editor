@@ -52,6 +52,10 @@ namespace Hades_Map_Editor
         private void HadesMapEditorForm_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             Console.WriteLine("Paint");
-        }        
+        }
+        private void HadesMapEditorForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ConfigManager configManager = ConfigManager.GetInstance();
+        }
     }
 }

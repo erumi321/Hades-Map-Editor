@@ -14,7 +14,7 @@ namespace Hades_Map_Editor.AssetsSection
     {
         private List<Asset> assets;
         private int currentPage, maxPage;
-        private int maxRow, maxColumn, wsize = 100, hsize = 120;
+        private int maxRow, maxColumn, wsize = 100, hsize = 118;
         public AssetItem[] assetsPanel;
         private AssetItem currentAsset;
 
@@ -30,7 +30,7 @@ namespace Hades_Map_Editor.AssetsSection
         public void Initialize()
         {
             currentPage = -1;
-            AutoSize = true;
+            //AutoSize = true;
             Dock = DockStyle.Fill;
             BackColor = Color.Aquamarine;
             assetsPanel = new AssetItem[maxRow * maxColumn];
@@ -39,6 +39,7 @@ namespace Hades_Map_Editor.AssetsSection
             {
                 AssetItem panel = new AssetItem((AssetsPanel)Parent);
                 assetsPanel[i] = panel;
+                //panel.AutoSize = true;
                 panel.Size = new System.Drawing.Size(wsize, hsize);
                 panel.Location = new System.Drawing.Point((i % maxRow) * wsize, (i / maxRow) * hsize);
                 panel.BackColor = (i % 2 == 0) ? System.Drawing.Color.CadetBlue : System.Drawing.Color.Cornsilk;

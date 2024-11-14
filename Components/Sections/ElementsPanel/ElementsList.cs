@@ -13,7 +13,6 @@ namespace Hades_Map_Editor.ElementsSection
 {
     public class ElementsList : ListBox, IComponent, Focusable
     {
-        ProjectData projectData;
         public Dictionary<int, Obstacle> listBoxIndex;
         public ElementsPanel parent;
         public ElementsList(ElementsPanel parent)
@@ -28,24 +27,33 @@ namespace Hades_Map_Editor.ElementsSection
             Dock = DockStyle.Fill;
             MultiColumn = false;
             SelectionMode = SelectionMode.One;
-            DrawMode = DrawMode.OwnerDrawFixed;
-            DrawItem += new DrawItemEventHandler(ElementsList_DrawItem);
+            DrawMode = DrawMode.OwnerDrawVariable;
         }
 
         public void Populate()
         {
+            DrawItem += new DrawItemEventHandler(ElementsList_DrawItem);
+            MeasureItem += new MeasureItemEventHandler(ElementsList_MeasureItem);
             SelectedIndexChanged += Action_SelectElement;
         }
         public void Action_SelectElement(object sender, EventArgs e)
         {
-            string message = (string)((ListBox)sender).SelectedItem;
-            if(message == null)
+            if(SelectedIndex < 0)
             {
                 return;
             }
-            int id = int.Parse(message.Split(':')[0]);
-            Console.WriteLine(id);
+            string message = (string)((ListBox)sender).SelectedItem;
+            int itemHeight = GetItemHeight(SelectedIndex);
             var pp = parent.GetProjectPage();
+            if (message == null || itemHeight <= 0)
+            {
+                UnFocus();
+                pp.propertiesPanel.UnFocus();
+                pp.mapPanel.UnFocus();
+                return;
+            }
+            int id = int.Parse(message.Split(':')[0]);
+            //Console.WriteLine(id);
             pp.propertiesPanel.FocusOn(id);
             pp.mapPanel.FocusOn(id);
         }  
@@ -53,26 +61,15 @@ namespace Hades_Map_Editor.ElementsSection
         private void ElementsList_DrawItem(object sender, DrawItemEventArgs e)
         {
             // Draw the background of the ListBox control for each item.
-            if(e.Index < 0)
+            if(e.Index < 0 || e.Bounds.Height <= 0)
             {
                 return;
             }
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
-                e = new DrawItemEventArgs(e.Graphics,
-                                          e.Font,
-                                          e.Bounds,
-                                          e.Index,
-                                          e.State ^ DrawItemState.Selected,
-                                          e.ForeColor,
-                                          System.Drawing.Color.LightGray); // Choose the color.
-            e.DrawBackground();
-            // Define the default color of the brush as black.
-            Brush myBrush = Brushes.Black;
-
             // Determine the color of the brush to draw each item based 
             // on the index of the item to draw.
             Obstacle obs = listBoxIndex[e.Index];
-
+            // Define the default color of the brush as black.
+            Brush myBrush = Brushes.Black;
             if (!obs.HasAsset())
             {
                 myBrush = Brushes.Orange;
@@ -85,12 +82,31 @@ namespace Hades_Map_Editor.ElementsSection
             {
                 myBrush = Brushes.Green;
             }
-            // Draw the current item text based on the current Font 
-            // and the custom brush settings.
-            e.Graphics.DrawString(Items[e.Index].ToString(),
-                e.Font, myBrush, e.Bounds, StringFormat.GenericDefault);
-            // If the ListBox has focus, draw a focus rectangle around the selected item.
-            e.DrawFocusRectangle();
+            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
+                e = new DrawItemEventArgs(e.Graphics,
+                                          e.Font,
+                                          e.Bounds,
+                                          e.Index,
+                                          e.State ^ DrawItemState.Selected,
+                                          e.ForeColor,
+                                          System.Drawing.Color.LightGray); // Choose the color.
+                e.DrawBackground();
+
+                // Draw the current item text based on the current Font 
+                // and the custom brush settings.
+                e.Graphics.DrawString(Items[e.Index].ToString(),
+                    e.Font, myBrush, e.Bounds, StringFormat.GenericDefault);
+                // If the ListBox has focus, draw a focus rectangle around the selected item.
+                e.DrawFocusRectangle();
+        }
+        private void ElementsList_MeasureItem(object sender, MeasureItemEventArgs e)
+        {
+            Obstacle obs = listBoxIndex[e.Index];
+            e.ItemHeight = 13;
+            if (!obs.HasAsset())
+            {
+                e.ItemHeight = 0;
+            }
         }
         public void UnFocus()
         {
