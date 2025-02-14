@@ -102,7 +102,7 @@ namespace Hades_Map_Editor.Data
         }
         public bool IsHidden()
         {
-            return hidden;
+            return hidden || !DisplayInEditor || Invisible;
         }
         public Size GetDimension()
         {
@@ -119,6 +119,33 @@ namespace Hades_Map_Editor.Data
         public Point GetLocation()
         {
             return pLocation;
+        }
+        public Point GetImageLocation()
+        {
+            Size size = GetDimension();
+
+            double zLocation = OffsetZ;
+
+            double xPos = Location.X;
+            double yPos = Location.Y;
+
+            double drawScale = Scale;
+
+            yPos -= zLocation * Math.Sin(1.0471975803375244) * ParallaxAmount;
+
+            double parallaxX = drawScale * Offset.X * ParallaxAmount;
+            double parallaxY = drawScale * Offset.Y * ParallaxAmount;
+
+            xPos += parallaxX;
+            yPos += parallaxY;
+
+            int halfSizeX = (int)(Math.Ceiling((double)((float)size.Width)) / 2);
+            int halfSizeY = (int)(Math.Ceiling((double)((float)size.Height)) / 2);
+
+            xPos -= halfSizeX;
+            yPos -= halfSizeY;
+
+            return new Point((int)xPos, (int)yPos);
         }
         public void Hide(bool value)
         {
@@ -137,5 +164,12 @@ namespace Hades_Map_Editor.Data
             public double X { get; set; }
             public double Y { get; set; }
         }
+        
+        /* Non-JSON fields, such as those loaded in by SJSON */
+        public bool DisplayInEditor { get; set; }
+        public bool Invisible { get; set; }
+        public JsonPoint Offset { get; set; }
+        public string MeshType { get; set; }
+        
     }
 }

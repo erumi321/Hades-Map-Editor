@@ -4,15 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static IronPython.Modules.PythonIterTools;
 
 namespace Hades_Map_Editor.Managers
 {
     public sealed class SaveManager
     {
         private static SaveManager _instance;
+        private ProjectData _projectData;
         public static SaveManager GetInstance()
         {
             if (_instance == null)
@@ -25,9 +28,11 @@ namespace Hades_Map_Editor.Managers
         public ProjectData CreateProject(string directoryPath)
         {
             MapData mapData = new MapData();
+            MapTextData mapTextData = new MapTextData();
             mapData.Obstacles = new List<Obstacle>();
-            ProjectData projectData =  new ProjectData(directoryPath+@"\myProject.hades_map", mapData);
-            SaveProject(projectData);
+            ProjectData projectData =  new ProjectData(directoryPath+@"\myProject.hades_map", mapData, mapTextData);
+            _projectData = projectData;
+            SaveProject(_projectData);
 
             return projectData;
         }
@@ -100,6 +105,7 @@ namespace Hades_Map_Editor.Managers
             LoadAssetsToMapData(projectData.mapData);
             ConfigManager config = ConfigManager.GetInstance();
             config.AddProjectPath(projectData.projectPath);
+            _projectData = projectData;
             return projectData;            
         }
         public void ExportMap(MapData mapData)
@@ -113,7 +119,7 @@ namespace Hades_Map_Editor.Managers
             {
                 try
                 {
-                    mapPath = OpenFile("Browse Map Texts", "map_text", "map texts (*.map_text)|*.map_text");
+                    mapPath = OpenFile("Browse Thing Texts", "thing_text", "thing texts (*.thing_text)|*.thing_text");
                 }
                 catch (NoFileLoadedException e)
                 {
@@ -128,16 +134,100 @@ namespace Hades_Map_Editor.Managers
             }
             LoadAssetsToMapData(mapData);
             string projectPath = Path.ChangeExtension(mapPath, ".hades_map");
-            ProjectData projectData = new ProjectData(projectPath, mapData);
-            SaveProject(projectData);
-            return projectData;
+            if (_projectData != null)
+            {
+                _projectData.projectPath = projectPath;
+                _projectData.mapData = mapData;
+            }
+            else
+            {
+                _projectData = new ProjectData(projectPath, mapData);
+            }
+            SaveProject(_projectData);
+            return _projectData;
+
+        }
+        public ProjectData ImportMapText(string mapPath)
+        {
+            MapTextData mapTextData;
+            if (mapPath == "")
+            {
+                try
+                {
+                    mapPath = OpenFile("Browse Thing Texts", "map_text", "map texts (*.map_text)|*.map_text");
+                }
+                catch (NoFileLoadedException e)
+                {
+                    throw e;
+                }
+
+            }
+            using (StreamReader r = new StreamReader(mapPath))
+            {
+                string json = r.ReadToEnd();
+                mapTextData = JsonConvert.DeserializeObject<MapTextData>(json);
+            }
+            string projectPath = Path.ChangeExtension(mapPath, ".hades_map");
+            if (_projectData != null)
+            {
+                _projectData.projectPath = projectPath;
+                _projectData.mapTextData = mapTextData;
+            }
+            else
+            {
+                _projectData = new ProjectData(projectPath, null, mapTextData);
+            }
+            SaveProject(_projectData);
+            return _projectData;
 
         }
         private void LoadAssetsToMapData(MapData mapData)
         {
+           
+            Dictionary<string, SJSONObject> allObstacles = SJSONLoader.LoadAllSJSONObstacles();
+
             AssetsManager assetsManager = AssetsManager.GetInstance();
             foreach (Obstacle obs in mapData.Obstacles)
             {
+                obs.Invisible = false;
+                obs.DisplayInEditor = true;
+                obs.Offset = new Obstacle.JsonPoint();
+                obs.MeshType = "Flat";
+
+                if (allObstacles.ContainsKey(obs.Name))
+                {
+                    Dictionary<string, SJSONObject> obsData = allObstacles[obs.Name];
+                    if (obsData.ContainsKey("Thing"))
+                    {
+                        Dictionary<string, SJSONObject> thing = obsData["Thing"];
+                        if (thing.ContainsKey("Offset"))
+                        {
+                            Dictionary<string, SJSONObject> offset = thing["Offset"];
+                            Obstacle.JsonPoint newPoint = new Obstacle.JsonPoint();
+                            newPoint.X = (double)(offset["X"]);
+                            newPoint.Y = (double)(offset["Y"]);
+                            obs.Offset = newPoint;
+                        }
+                        if (thing.ContainsKey("Scale"))
+                        {
+                            obs.Scale *= (double)thing["Scale"];
+                        }
+                        if (thing.ContainsKey("Invisible") && thing["Invisible"] == true)
+                        {
+                            obs.Invisible = true;
+                        }
+                        if (thing.ContainsKey("MeshType"))
+                        {
+                            obs.MeshType = (string)(thing["MeshType"]);
+                        }
+
+                    }
+                    
+                    if (obsData.ContainsKey("DisplayInEditor") && ((bool)obsData["DisplayInEditor"])==false)
+                    {
+                        obs.DisplayInEditor = false;
+                    }
+                }
                 Asset asset;
                 if (assetsManager.GetAsset(obs.Name, out asset))
                 {

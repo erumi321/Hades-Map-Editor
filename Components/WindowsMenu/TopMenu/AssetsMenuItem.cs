@@ -90,6 +90,8 @@ namespace Hades_Map_Editor.Components
                         //formManager.GetElementsPanel().RefreshData();
                     }
                 });
+
+                //Task 
                 //FormManager.GetInstance().GetAssetsPanel().Refresh();
             }
             catch (Exception ex) { Console.WriteLine(ex.ToString()); }

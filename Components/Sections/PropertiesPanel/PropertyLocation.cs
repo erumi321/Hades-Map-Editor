@@ -15,11 +15,16 @@ namespace Hades_Map_Editor.PropertiesSection
         protected TextBox xTextBox;
         protected TextBox yTextBox;
         bool canEdit;
-        public PropertyLocation(string label, bool edit = false) : base(label)
+
+        Action<Point> _onChange;
+        public PropertyLocation(string label, bool edit = false, Action<Point> onChange = null) : base(label)
         {
             canEdit = edit;
             Initialize();
             Populate();
+
+            _onChange = onChange;
+
             //properties = new ThingTextProperties(this, panel);
         }
         public new void Initialize()
@@ -27,11 +32,15 @@ namespace Hades_Map_Editor.PropertiesSection
             xTextBox = new TextBox();
             xTextBox.Dock = DockStyle.Right;
             xTextBox.Enabled = canEdit;
+            xTextBox.Size = new Size(80, 40);
+            xTextBox.KeyUp += UpdateLocation;
             Controls.Add(xTextBox);
 
             yTextBox = new TextBox();
             yTextBox.Dock = DockStyle.Right;
             yTextBox.Enabled = canEdit;
+            yTextBox.Size = new Size(80, 40);
+            yTextBox.KeyUp += UpdateLocation;
             Controls.Add(yTextBox);
             //Controls.Add(textBox);
 
@@ -41,6 +50,27 @@ namespace Hades_Map_Editor.PropertiesSection
         public new void Populate()
         {
         }
+
+        public void UpdateLocation(object sender, EventArgs e)
+        {
+            string x = xTextBox.Text;
+            int xN = 0;
+            string y = yTextBox.Text;
+            int yN = 0;
+
+            if (int.TryParse(x, out xN) && int.TryParse(y, out yN))
+            {
+                Point value = new System.Drawing.Point(xN, yN);
+
+                if (_onChange != null)
+                {
+                    _onChange(value);
+                }
+            }
+
+
+        }
+
         public override void Update(Point value)
         {
             xTextBox.Text = string.Format("{0:0}", value.X);

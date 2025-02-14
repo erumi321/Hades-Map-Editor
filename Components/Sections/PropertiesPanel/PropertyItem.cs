@@ -25,6 +25,7 @@ namespace Hades_Map_Editor.PropertiesSection
             AutoScroll = false;
             Dock = DockStyle.Fill;
             Size = new System.Drawing.Size(1, 24);
+            Margin = new Padding(0, 2, 2, 0);
             FlowDirection = FlowDirection.LeftToRight;
 
             nameLabel = new Label();

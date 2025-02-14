@@ -70,6 +70,7 @@ namespace Hades_Map_Editor.Data
         private Point pOriginalSize;
 
         private Image image;
+
         public Rectangle GetRect()
         {
             return pRect;
@@ -99,12 +100,13 @@ namespace Hades_Map_Editor.Data
             hull = json.GetHull();
             Enum.TryParse(json.name.Split('\\').First(), out AssetType myType);
             type = myType;
-            //image = Utility.LoadImage(assetpath, rect);
+            image = LoadImage();
         }
+
         public Image GetImage(Size size = new Size())
         {
             if (image == null)
-            {
+            {                
                 image = LoadImage();
             }
             if (size.Width == 0 || size.Height == 0)
@@ -113,7 +115,7 @@ namespace Hades_Map_Editor.Data
             }
             else
             {
-                return Utility.ResizeImage(image, size.Width, size.Height);
+                return Utility.ResizeImage(image, size.Width, size.Height); ;
             }
         }
         public Image LoadImage()

@@ -17,6 +17,7 @@ namespace Hades_Map_Editor.Sections
         private ProjectData data;
         private MenuStrip topMenu;
         private ToolStripMenuItem zoomIn, zoomOut;
+        string selectGroup = "";
         public MapPanel(ProjectData data)
         {
             this.data = data;
@@ -24,6 +25,10 @@ namespace Hades_Map_Editor.Sections
             Populate();
         }
 
+        public MapCanvas getCanvas()
+        {
+            return canvas;
+        }
 
         public void Initialize()
         {
@@ -47,7 +52,13 @@ namespace Hades_Map_Editor.Sections
             topMenu.Items.Add(zoomOut);
             Controls.Add(topMenu);
 
-            canvas = new MapCanvas();
+            canvas = new MapCanvas(data);
+            canvas.ZoomIn();
+            canvas.ZoomIn();
+            canvas.ZoomIn();
+            canvas.ZoomIn();
+            canvas.ZoomIn();
+            canvas.ZoomIn();
             Controls.Add(canvas);
 
             /*canvas.MouseClick += new MouseEventHandler((o, e) => {
@@ -92,18 +103,18 @@ namespace Hades_Map_Editor.Sections
         public void FocusOn(int id)
         {
             Obstacle obs = data.mapData.GetFromId(id);
-            //Size size = canvas;
-            //Add rectangle
 
-            // Adjust scrollbar
-            Size offset = canvas.GetOffset(obs.GetLocation());
+
+            Size offset = canvas.GetOffset(obs.GetImageLocation());
             //Size mapOffset = canvas.GetMapOffset();
 
             if (obs.HasAsset())
             {
-                canvas.VerticalScroll.Value = Math.Max(Math.Min(offset.Width, canvas.VerticalScroll.Maximum), 0);
-                canvas.HorizontalScroll.Value = Math.Max(Math.Min(offset.Height, canvas.HorizontalScroll.Maximum), 0);
+                //subtracting by 2040 centers the item within the middle of the screen, without the very top-left of the image is at (0,0) on the viewport
+                canvas.VerticalScroll.Value = (int)(Math.Max(Math.Min(offset.Height - 2040, canvas.VerticalScroll.Maximum), 0) * canvas.getCurrentScale());
+                canvas.HorizontalScroll.Value = (int)(Math.Max(Math.Min(offset.Width - 2040, canvas.HorizontalScroll.Maximum), 0) * canvas.getCurrentScale());
                 canvas.SetSelect(obs);
+                selectGroup = obs.GroupNames[0];
                 //PerformLayout();
             }
             else
@@ -111,25 +122,57 @@ namespace Hades_Map_Editor.Sections
                 canvas.UnsetSelect();
             }
             canvas.Refresh();
+            canvas.PerformLayout();
+        }
+        public void TryFocusOff(string groupName)
+        {
+            if (groupName == "" || groupName == selectGroup)
+            {
+                canvas.UnsetSelect();
+                canvas.Refresh();
+            }
+        }
+        public void FocusOff()
+        {
+            canvas.UnsetSelect();
+            canvas.Refresh();
         }
 
         public void GetData()
         {
-                AssetsManager assetsManager = AssetsManager.GetInstance();
-                foreach (Obstacle obs in data.mapData.Obstacles)
+            AssetsManager assetsManager = AssetsManager.GetInstance();
+            foreach (Obstacle obs in data.mapData.Obstacles)
+            {
+                Asset asset;
+                if (assetsManager.GetAsset(obs.Name, out asset))
                 {
-                    Asset asset;
-                    if (assetsManager.GetAsset(obs.Name, out asset))
-                    {
-                        canvas.AddItem(obs);
-                    }
+                    canvas.AddItem(obs);
                 }
+            }
+            if (data.mapTextData != null && data.mapTextData.ThingGroups != null)
+            {
+                Dictionary<string, int> groupOrdering = new Dictionary<string, int>();
+                int i = 0;
+                foreach (ThingGroup group in data.mapTextData.ThingGroups)
+                {
+                    groupOrdering.Add(group.Id.Name, i);
+                    i++;
+                }
+
+                canvas.groupOrdering = groupOrdering;
+            }
+
         }
 
         public void RefreshData()
         {
             GetData();
             canvas.MapRefresh();
+        }
+
+        public void RefreshObstacle(int id)
+        {
+            canvas.RefreshObstacle(id);
         }
         // Actions
         private void MapPanel_ZoomIn_Click(object sender, EventArgs e)

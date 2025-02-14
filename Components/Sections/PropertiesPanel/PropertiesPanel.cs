@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
+using Hades_Map_Editor.MapSection;
 
 namespace Hades_Map_Editor.Sections
 {
@@ -31,15 +33,19 @@ namespace Hades_Map_Editor.Sections
         //PropertyGroup groupNames;
         PropertyColor color;
         //PropertyPoints points;
-        public PropertiesPanel(ProjectData data)
+
+        MapPanel mapPanel;
+        public PropertiesPanel(ProjectData data, MapPanel mapPanel)
         {
             this.data = data;
+            this.mapPanel = mapPanel;
             Initialize();
             Populate();
             //properties = new ThingTextProperties(this, panel);
         }
         public void Initialize()
         {
+            this.Size = new System.Drawing.Size(400, 500);
             BackColor = System.Drawing.Color.DarkGray;
             //AutoScroll = true;
             //AutoSize = true;
@@ -58,50 +64,168 @@ namespace Hades_Map_Editor.Sections
             //attributePanel.Size = new System.Drawing.Size(280,500);
             //attributePanel.AutoSize = true;
             attributePanel.Dock = DockStyle.Fill;
-            attributePanel.BackColor = System.Drawing.Color.Red;
+            attributePanel.BackColor = System.Drawing.Color.Black;
             attributePanel.Visible = true;
 
             obstacleTitle = new PropertyTitle("Obstacles Data");
-            activateAtRange = new PropertyCheckbox("Activate At Range");
-            activationRange = new PropertyDouble("Activation Range");
-            active = new PropertyCheckbox("Active");
-            allowMovementReaction = new PropertyCheckbox("Allow Movement Reaction");
-            ambient = new PropertyDouble("Ambient");
-            angle = new PropertyDouble("Angle");
+            activateAtRange = new PropertyCheckbox("Activate At Range", false);
+            activationRange = new PropertyDouble("Activation Range", false);
+            active = new PropertyCheckbox("Active", true, (bool v) =>
+            {
+                if (v == currentObstacle.Active)
+                {
+                    return;
+                }
+
+                currentObstacle.Active = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            allowMovementReaction = new PropertyCheckbox("Allow Movement Reaction", true, (bool v) => { currentObstacle.AllowMovementReaction = v; });
+            ambient = new PropertyDouble("Ambient", true, (double v) => { currentObstacle.Ambient = v; });
+            angle = new PropertyDouble("Angle", true, (double v) => {
+                if (v == currentObstacle.Angle)
+                {
+                    return;
+                }
+                currentObstacle.Angle = v; 
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
             attachToID = new PropertyID("Attached To ID");
             attachedIDs = new PropertyAttachedIDs("Attached IDs");
-            causesOcculsion = new PropertyCheckbox("Causes Occulsion");
-            clutter = new PropertyCheckbox("Clutter");
-            collision = new PropertyCheckbox("Collision");
-            color = new PropertyColor("Color");
-            comments = new PropertyTextbox("Comments");
-            createsShadows = new PropertyCheckbox("Creates Shadows");
-            dataType = new PropertyTextbox("Data Type");
-            drawVfxOnTop = new PropertyCheckbox("Draw Vfx On Top");
-            flipHorizontal = new PropertyCheckbox("Flip Horizontal");
-            flipVertical = new PropertyCheckbox("Flip Vertical");
+            causesOcculsion = new PropertyCheckbox("Causes Occulsion", true, (bool v) => { currentObstacle.CausesOcculsion = v; });
+            clutter = new PropertyCheckbox("Clutter", true, (bool v) => { currentObstacle.Clutter = v; });
+            collision = new PropertyCheckbox("Collision", true, (bool v) => { currentObstacle.Collision = v; });
+            color = new PropertyColor("Color", true, (Color c) =>
+            {
+                if (c.R == currentObstacle.Color.R && c.B == currentObstacle.Color.B && c.G == currentObstacle.Color.G && c.A == currentObstacle.Color.A)
+                {
+                    return;
+                }
+                Obstacle.JsonColor t = new Obstacle.JsonColor();
+                t.R = c.R;
+                t.G = c.G;
+                t.B = c.B;
+                t.A = c.A;
+                currentObstacle.Color = t;
+
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            comments = new PropertyTextbox("Comments", true, (string v) => { currentObstacle.Comments = v; });
+            createsShadows = new PropertyCheckbox("Creates Shadows", true, (bool v) => { currentObstacle.CreatesShadows = v; });
+            dataType = new PropertyTextbox("Data Type", true);
+            drawVfxOnTop = new PropertyCheckbox("Draw Vfx On Top", true, (bool v) => { currentObstacle.DrawVfxOnTop = v; });
+            flipHorizontal = new PropertyCheckbox("Flip Horizontal", true, (bool v) => {
+                if (v == currentObstacle.FlipHorizontal)
+                {
+                    return;
+                }
+                currentObstacle.FlipHorizontal = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            flipVertical = new PropertyCheckbox("Flip Vertical", true, (bool v) => {
+                if (v == currentObstacle.FlipVertical)
+                {
+                    return;
+                }
+                currentObstacle.FlipVertical = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
             //groupNames = 
             //helpTextId = new PropertyInt("Help Text Id");
-            hue = new PropertyDouble("Hue");
-            id = new PropertyInt("Id");
-            ignoreGridManager = new PropertyCheckbox("Ignore Grid Manager");
-            invert = new PropertyCheckbox("Invert");
-            location = new PropertyLocation("Location");
-            name = new PropertyTextbox("Name");
-            offsetZ = new PropertyDouble("Offset Z");
-            parallaxAmount = new PropertyDouble("Parallax Amount");
-            //points =
-            saturation = new PropertyDouble("Saturation");
-            scale = new PropertyDouble("Scale");
-            skewAngle = new PropertyDouble("Skew Angle");
-            skewScale = new PropertyDouble("Skew Scale");
-            sortIndex = new PropertyInt("Sort Index");
-            stopsLight = new PropertyCheckbox("Stops Light");
-            tallness = new PropertyDouble("Tallness");
-            useBoundsForSortArea = new PropertyCheckbox("Use Bounds For Sort Area");
-            value = new PropertyDouble("Value");
+            hue = new PropertyDouble("Hue", true, (double v) =>
+            {
+                if (v == currentObstacle.Hue)
+                {
+                    return;
+                }
+                currentObstacle.Hue = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            id = new PropertyInt("Id", false);
+            ignoreGridManager = new PropertyCheckbox("Ignore Grid Manager", false);
+            invert = new PropertyCheckbox("Invert", true, (bool v) => {
+                if (v == currentObstacle.Invert)
+                {
+                    return;
+                }
+                currentObstacle.Invert = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            location = new PropertyLocation("Location", true, (Point p) =>
+            {
+                if (p.X == currentObstacle.Location.X && p.Y == currentObstacle.Location.Y)
+                {
+                    return;
+                }
+                Obstacle.JsonPoint t = new Obstacle.JsonPoint();
+                t.X = p.X;
+                t.Y = p.Y;
+                currentObstacle.Location = t;
 
-            
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+                mapPanel.FocusOn(currentObstacle.Id);
+            });
+            name = new PropertyTextbox("Name", true, (string v) => {
+                if (v == currentObstacle.Name)
+                {
+                    return;
+                }
+                currentObstacle.Name = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            offsetZ = new PropertyDouble("Offset Z", true, (double v) => {
+                if (v == currentObstacle.OffsetZ)
+                {
+                    return;
+                }
+                currentObstacle.OffsetZ = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            parallaxAmount = new PropertyDouble("Parallax Amount", true);
+            //points =
+            saturation = new PropertyDouble("Saturation", true, (double v) =>
+            {
+                if (v == currentObstacle.Saturation)
+                {
+                    return;
+                }
+                currentObstacle.Saturation = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+            scale = new PropertyDouble("Scale", true, (double v) =>
+            {
+                if (v == currentObstacle.Scale)
+                {
+                    return;
+                }
+                currentObstacle.Scale = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+
+            //math is very complicated, not currently supported
+            skewAngle = new PropertyDouble("Skew Angle", false);
+            skewScale = new PropertyDouble("Skew Scale", false);
+
+            //also not ucrrently supported, indexing not fully figured out yet
+            sortIndex = new PropertyInt("Sort Index", false);
+
+            stopsLight = new PropertyCheckbox("Stops Light", true, (bool v) => { currentObstacle.StopsLight = v; });
+            tallness = new PropertyDouble("Tallness", true, (double v) => { currentObstacle.Tallness = v; });
+
+            //Not currently supported, unsure of what this does
+            useBoundsForSortArea = new PropertyCheckbox("Use Bounds For Sort Area", false);
+
+            value = new PropertyDouble("Value", true, (double v) =>
+            {
+                if (v == currentObstacle.Value)
+                {
+                    return;
+                }
+                currentObstacle.Value = v;
+                mapPanel.RefreshObstacle(currentObstacle.Id);
+            });
+
+
             attributePanel.Controls.Add(obstacleTitle);
             attributePanel.Controls.Add(activateAtRange);
             attributePanel.Controls.Add(activationRange);

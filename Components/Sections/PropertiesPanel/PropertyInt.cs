@@ -10,10 +10,16 @@ namespace Hades_Map_Editor.PropertiesSection
 {
     public class PropertyInt: PropertyTextbox, IComponent
     {
-        public PropertyInt(string label) : base(label)
+        Action<int> _onChange;
+        public PropertyInt(string label, bool edit = false, Action<int> onChange = null) : base(label)
         {
             Initialize();
             Populate();
+
+            this.Enabled = edit;
+
+            _onChange = onChange;
+
             //properties = new ThingTextProperties(this, panel);
         }
         public new void Initialize()
@@ -25,6 +31,11 @@ namespace Hades_Map_Editor.PropertiesSection
         public void Update(int value)
         {
             base.Update(string.Format("{0:0}", value));
+
+            if (_onChange != null)
+            {
+                _onChange(value);
+            }
         }
     }
 }

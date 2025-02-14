@@ -39,9 +39,13 @@ namespace Hades_Map_Editor.Components.Dialogs
         public void Populate()
         {
             ConfigManager configManager = ConfigManager.GetInstance();
-            hadesPath.SetText(configManager.GetPath(ConfigType.HadesPath));
-            pythonPath.SetText(configManager.GetPath(ConfigType.PythonPath));
-            projectPath.SetText(configManager.GetPath(ConfigType.ProjectPath));
+            //hadesPath.SetText(configManager.GetPath(ConfigType.HadesPath));
+            hadesPath.SetText("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Hades");
+            //pythonPath.SetText(configManager.GetPath(ConfigType.PythonPath));
+            pythonPath.SetText("C:\\Users\\rumine\\AppData\\Local\\Programs\\Python\\Python312");
+            //projectPath.SetText(configManager.GetPath(ConfigType.ProjectPath));
+            projectPath.SetText("C:\\Users\\rumine\\Desktop\\HadesMapperProjects");
+
             resourcesPath.SetText(configManager.GetPath(ConfigType.ResourcesPath));
 
             saveButton.Click += (s, e) => Action_SaveButton(s, e);
@@ -49,7 +53,7 @@ namespace Hades_Map_Editor.Components.Dialogs
             pythonPath.browseButton.Click += (s, e) => Action_PythonPath_BrowseButton(s, e);
             projectPath.browseButton.Click += (s, e) => Action_ProjectPath_BrowseButton(s, e);
             resourcesPath.browseButton.Click += (s, e) => Action_ResourcesPath_BrowseButton(s, e);
-            saveButton.Enabled = false;
+            //saveButton.Enabled = false;
         }
         private void Action_SaveButton(object sender, EventArgs e)
         {
@@ -62,7 +66,7 @@ namespace Hades_Map_Editor.Components.Dialogs
                 { ConfigType.ResourcesPath, resourcesPath.GetText() }
             });
 
-            saveButton.Enabled = false;
+            //saveButton.Enabled = false;
         }
         private void Action_HadesPath_BrowseButton(object sender, EventArgs e)
         {

@@ -11,12 +11,15 @@ namespace Hades_Map_Editor.PropertiesSection
     public class PropertyTextbox : PropertyItem<string>, IComponent
     {
         protected TextBox textBox;
-        bool canEdit;
-        public PropertyTextbox(string label, bool edit = false) : base(label)
+        protected bool canEdit;
+
+        Action<string> _onChange;
+        public PropertyTextbox(string label, bool edit = false, Action<string> onChange = null) : base(label)
         {
             canEdit = edit;
             Initialize();
             Populate();
+            _onChange = onChange;
             //properties = new ThingTextProperties(this, panel);
         }
         public new void Initialize()
@@ -25,6 +28,7 @@ namespace Hades_Map_Editor.PropertiesSection
             textBox = new TextBox();
             textBox.Dock = DockStyle.Right; 
             textBox.Enabled = canEdit;
+            textBox.TextChanged += UpdateText;
             Leave += new EventHandler(Property_Leave);
             Controls.Add(textBox);
             //Controls.Add(textBox);
@@ -35,9 +39,21 @@ namespace Hades_Map_Editor.PropertiesSection
         public new void Populate()
         {
         }
+        public void UpdateText(object sender, EventArgs e)
+        {
+            if(_onChange != null)
+            {
+                _onChange(textBox.Text);
+            }
+        }
         public override void Update(string value)
         {
             textBox.Text = value;
+
+            if(_onChange != null)
+            {
+                _onChange(value);
+            }
         }
         private void Property_Leave(object sender, EventArgs e)
         {

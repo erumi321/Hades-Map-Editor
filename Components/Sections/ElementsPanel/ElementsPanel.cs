@@ -34,25 +34,34 @@ namespace Hades_Map_Editor.Sections
             _ = GetData();
         }
 
+        public void LoadElements()
+        {
+            listBox.BeginUpdate();
+            foreach (var obstacle in data.mapData.GetActiveObstacles())
+            {
+                if (data.hiddenGroups.Contains(obstacle.GroupNames[0]))
+                {
+                    continue;
+                }
+                listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
+            }
+            listBox.EndUpdate();
+            Console.WriteLine("Loaded Elements");
+        }
+
         public async Task GetData()
         {
             await Task.Factory.StartNew(() =>
             {
-                //WRITING A FILE OR SOME SUCH THINGAMAGIG
-                listBox.BeginUpdate();
-                foreach (var obstacle in data.mapData.GetActiveObstacles())
-                {
-                    listBox.listBoxIndex.Add(listBox.Items.Add(obstacle.Id + ":" + obstacle.Name), obstacle);
-                }
-                listBox.EndUpdate();
-                Console.WriteLine("Loaded Elements");
+                LoadElements();
             });
         }
 
         public void RefreshData()
         {
             listBox.Items.Clear();
-            _ = GetData();
+            listBox.listBoxIndex.Clear();
+            LoadElements();
         }
 
         public void UnFocus()

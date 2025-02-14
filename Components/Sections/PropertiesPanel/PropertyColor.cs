@@ -14,43 +14,79 @@ namespace Hades_Map_Editor.PropertiesSection
     public class PropertyColor : PropertyItem<Color>, IComponent
     {
         protected TextBox bTextBox, gTextBox, rTextBox, aTextBox;
-        Label colorPreview;
         bool canEdit;
-        public PropertyColor(string label, bool edit = false) : base(label)
+        Action<Color> _onChange;
+        public PropertyColor(string label, bool edit = false, Action<Color> onChange = null) : base(label)
         {
             canEdit = edit;
             Initialize();
             Populate();
+
+            _onChange = onChange;
+
             //properties = new ThingTextProperties(this, panel);
         }
         public new void Initialize()
         {
-            colorPreview = new Label();
-            colorPreview.BackColor = System.Drawing.Color.Transparent;
-            Controls.Add(aTextBox);
-
-            bTextBox = new TextBox();
-            bTextBox.Dock = DockStyle.Right;
-            bTextBox.Enabled = canEdit;
-            Controls.Add(bTextBox);
-
-            gTextBox = new TextBox();
-            gTextBox.Dock = DockStyle.Right;
-            gTextBox.Enabled = canEdit;
-            Controls.Add(gTextBox);
-
             rTextBox = new TextBox();
+            rTextBox.Size = new Size(30, 40);
             rTextBox.Dock = DockStyle.Right;
             rTextBox.Enabled = canEdit;
+            rTextBox.TextChanged += UpdateColor;
             Controls.Add(rTextBox);
 
+
+            gTextBox = new TextBox();
+            gTextBox.Size = new Size(30, 40);
+            gTextBox.Dock = DockStyle.Right;
+            gTextBox.Enabled = canEdit;
+            gTextBox.TextChanged += UpdateColor;
+            Controls.Add(gTextBox);
+
+
+            bTextBox = new TextBox();
+            bTextBox.Size = new Size(30, 40);
+            bTextBox.Dock = DockStyle.Right;
+            bTextBox.Enabled = canEdit;
+            bTextBox.TextChanged += UpdateColor;
+            Controls.Add(bTextBox);
+
+
             aTextBox = new TextBox();
+            aTextBox.Size = new Size(30, 40);
             aTextBox.Dock = DockStyle.Right;
             aTextBox.Enabled = canEdit;
+            aTextBox.TextChanged += UpdateColor;
             Controls.Add(aTextBox);
         }
+
         public new void Populate()
         {
+        }
+        public void UpdateColor(object sender, EventArgs e)
+        {
+            string a = aTextBox.Text;
+            int aN = 0;
+            string r = rTextBox.Text;
+            int rN = 0;
+            string g = gTextBox.Text;
+            int gN = 0;
+            string b = bTextBox.Text;
+            int bN = 0;
+
+            if (int.TryParse(a, out aN) && int.TryParse(r, out rN) && int.TryParse(g, out gN) && int.TryParse(b, out bN))
+            {
+                Color value = System.Drawing.Color.FromArgb(aN, rN, gN, bN);
+
+                nameLabel.BackColor = value;
+
+                if (_onChange != null)
+                {
+                    _onChange(value);
+                }
+            }
+
+           
         }
         public override void Update(Color value)
         {
@@ -59,7 +95,12 @@ namespace Hades_Map_Editor.PropertiesSection
             rTextBox.Text = string.Format("{0:0}", value.R);
             aTextBox.Text = string.Format("{0:0}", value.A);
 
-            BackColor = System.Drawing.Color.FromArgb(value.A, value.B, value.G, value.R);
+            nameLabel.BackColor = System.Drawing.Color.FromArgb(value.A, value.B, value.G, value.R);
+
+            if (_onChange != null)
+            {
+                _onChange(value);
+            }
         }
         private void Property_Leave(object sender, EventArgs e)
         {

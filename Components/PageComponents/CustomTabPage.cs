@@ -12,9 +12,10 @@ namespace Hades_Map_Editor.Components
     public class CustomTabPage : TabPage, IComponent
     {
         ProjectData data;
-        CustomSplitContainer mainSplitContainer, leftSplitContainer, rightSplitContainer;
+        CustomSplitContainer mainSplitContainer, leftSplitContainer, rightSplitContainer, rightRightSplitContainer;
         public PropertiesPanel propertiesPanel;
         public AssetsPanel assetsPanel;
+        public GroupsPanel groupsPanel;
         public ElementsPanel elementsPanel;
         public MapPanel mapPanel;
         public CustomTabPage(ProjectData data)
@@ -26,10 +27,11 @@ namespace Hades_Map_Editor.Components
         public void Initialize()
         {
             CreateSplitContainers();
+            CreateMapPanel();
             CreatePropertiesPanel();
             CreateElementsPanel();
-            CreateMapPanel();
             CreateAssetsPanel();
+            CreateGroupsPanel();
         }
 
         public void Populate()
@@ -41,6 +43,7 @@ namespace Hades_Map_Editor.Components
             mainSplitContainer = new CustomSplitContainer();
             leftSplitContainer = new CustomSplitContainer();
             rightSplitContainer = new CustomSplitContainer();
+            rightRightSplitContainer = new CustomSplitContainer();
 
             mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             mainSplitContainer.SplitterDistance = 25;
@@ -54,17 +57,24 @@ namespace Hades_Map_Editor.Components
             rightSplitContainer.SplitterDistance = 100;
             rightSplitContainer.SplitterWidth = 3;
 
+            rightRightSplitContainer.BackColor = System.Drawing.Color.AntiqueWhite;
+            rightRightSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            rightRightSplitContainer.SplitterDistance = 100;
+            rightRightSplitContainer.SplitterWidth = 3;
+            rightRightSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+
 
 
             // Add it to panels of SplitContainerAdv
             mainSplitContainer.Panel1.Controls.Add(leftSplitContainer);
             mainSplitContainer.Panel2.Controls.Add(rightSplitContainer);
+            rightSplitContainer.Panel2.Controls.Add(rightRightSplitContainer);
 
             Controls.Add(mainSplitContainer);
         }
         private void CreatePropertiesPanel()
         {
-            propertiesPanel = new PropertiesPanel(data);
+            propertiesPanel = new PropertiesPanel(data, mapPanel);
             leftSplitContainer.Panel1.Controls.Add(propertiesPanel);
         }
         private void CreateElementsPanel()
@@ -80,7 +90,12 @@ namespace Hades_Map_Editor.Components
         private void CreateAssetsPanel()
         {
             assetsPanel = new AssetsPanel(data);
-            rightSplitContainer.Panel2.Controls.Add(assetsPanel);
+            rightRightSplitContainer.Panel1.Controls.Add(assetsPanel);
+        }
+        private void CreateGroupsPanel()
+        {
+            groupsPanel = new GroupsPanel(data, mapPanel, elementsPanel);
+            rightRightSplitContainer.Panel2.Controls.Add(groupsPanel);
         }
         private void CreateGroupBoxes(TabPage tabPage)
         {

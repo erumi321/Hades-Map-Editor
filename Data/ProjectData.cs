@@ -14,11 +14,21 @@ namespace Hades_Map_Editor.Data
         public string projectPath;
         public string name;
         public MapData mapData;
+        public MapTextData mapTextData;
+        public List<string> hiddenGroups;
 
-        public ProjectData(string projectPath, MapData mapData)
+        public ProjectData(string projectPath, MapData mapData = null, MapTextData mapTextData = null)
         {
-            this.mapData = mapData;
+            if (mapData != null)
+            {
+                this.mapData = mapData;
+            }
+            if (mapTextData != null)
+            {
+                this.mapTextData = mapTextData;
+            }
             this.projectPath = projectPath;
+            hiddenGroups = new List<string>();
             name = Path.GetFileNameWithoutExtension(projectPath);
         }
         /*public void OpenMap(string mapPath)

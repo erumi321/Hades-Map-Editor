@@ -1,4 +1,5 @@
-﻿using Hades_Map_Editor.Managers;
+﻿using Hades_Map_Editor.Data;
+using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,10 +14,11 @@ namespace Hades_Map_Editor.Components
     public class FilesMenuItem : ToolStripMenuItem, IComponent
     {
         public ToolStripMenuItem
-            newProject, newHadesProject, newHades2Project, openMapOrProject, tempImport, recentProjects,
+            newProject, newHadesProject, newHades2Project, openMapOrProject, tempImport, tempMapImport, recentProjects,
             save, saveAs, saveAll, export, exportAs, exportAsImage, 
             close, closeAll, parameters, exit;
         HadesMapEditor app;
+        
         public FilesMenuItem(HadesMapEditor app) : base("Files")
         {
             this.app = app;
@@ -35,6 +37,7 @@ namespace Hades_Map_Editor.Components
             newHades2Project = new ToolStripMenuItem("New Hades 2 Project");
             openMapOrProject = new ToolStripMenuItem("Open .thing_text/.hades_map");
             tempImport = new ToolStripMenuItem("Open .thing_text (Temporary)");
+            tempMapImport = new ToolStripMenuItem("Open .map_text (Temporary)");
             recentProjects = new ToolStripMenuItem("Recent Projects");
             save = new ToolStripMenuItem("Save");
             saveAs = new ToolStripMenuItem("Save As");
@@ -52,6 +55,7 @@ namespace Hades_Map_Editor.Components
             newProject.DropDownItems.Add(newHades2Project);
             DropDownItems.Add(openMapOrProject);
             DropDownItems.Add(tempImport);
+            DropDownItems.Add(tempMapImport);
             DropDownItems.Add(recentProjects);
             foreach (string project in configManager.GetAllProjectPath())
             {
@@ -80,6 +84,7 @@ namespace Hades_Map_Editor.Components
             newHades2Project.Enabled = false;
             openMapOrProject.Click += OpenMapOrProject_Action;
             tempImport.Click += TemporaryImport_Action;
+            tempMapImport.Click += TemporaryMapTextImport_Action;
             if (recentProjects.DropDownItems.Count > 0)
             {
                 foreach (ToolStripMenuItem recentAction in recentProjects.DropDownItems)
@@ -134,6 +139,16 @@ namespace Hades_Map_Editor.Components
             try
             {
                 app.tabPage.CreateNewTabPage(saveManager.ImportMap(""));
+            }
+            catch (Exception) { }
+        }
+
+        private void TemporaryMapTextImport_Action(object sender, EventArgs e)
+        {
+            SaveManager saveManager = SaveManager.GetInstance();
+            try
+            {
+                app.tabPage.CreateNewTabPage(saveManager.ImportMapText(""));
             }
             catch (Exception) { }
         }

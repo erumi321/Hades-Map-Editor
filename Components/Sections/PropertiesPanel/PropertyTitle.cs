@@ -14,6 +14,7 @@ namespace Hades_Map_Editor.PropertiesSection
         {
             Initialize();
             Populate();
+
             //properties = new ThingTextProperties(this, panel);
         }
         public new void Initialize()

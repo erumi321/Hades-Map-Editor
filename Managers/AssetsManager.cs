@@ -119,13 +119,15 @@ namespace Hades_Map_Editor.Managers
                 formManager.GetBottomMenu().SetStatuts("Fetch assets...");
                 ConfigManager configManager = ConfigManager.GetInstance();
                 List<Task> tasks = new List<Task>();
+
                 tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Tartarus",configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
+                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "DeathArea",configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Erebus", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Asphodel", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Elysium", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Surface", configManager.GetHadesPath(), configManager.GetResourcesPath());
                 //_ = RunProcessAsync(configManager.GetPythonPath(), "Styx", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                
+
                 Task task =  Task.WhenAll(tasks);
                 await task.ContinueWith(allTask =>
                 {
@@ -157,7 +159,7 @@ namespace Hades_Map_Editor.Managers
                     FileName = pythonPath+@"\python.exe",
                     Arguments = string.Format("{0} {1} {2} {3}", "\"" + System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\Python\\extract.py\"", "\""+packageName+"\"", "\""+hadesPath+"\"", "\""+resourcesPath+"\""),
                     UseShellExecute = false,
-                    RedirectStandardOutput = true
+                    RedirectStandardOutput = false
                 },
                 EnableRaisingEvents = true
             };
