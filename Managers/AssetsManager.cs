@@ -122,11 +122,11 @@ namespace Hades_Map_Editor.Managers
 
                 tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Tartarus",configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
                 tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "DeathArea",configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
-                //_ = RunProcessAsync(configManager.GetPythonPath(), "Erebus", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                //_ = RunProcessAsync(configManager.GetPythonPath(), "Asphodel", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                //_ = RunProcessAsync(configManager.GetPythonPath(), "Elysium", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                //_ = RunProcessAsync(configManager.GetPythonPath(), "Surface", configManager.GetHadesPath(), configManager.GetResourcesPath());
-                //_ = RunProcessAsync(configManager.GetPythonPath(), "Styx", configManager.GetHadesPath(), configManager.GetResourcesPath());
+                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Erebus", configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
+                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Asphodel", configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
+                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Elysium", configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
+                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Surface", configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
+                tasks.Add(RunProcessAsync(configManager.GetPath(ConfigType.PythonPath), "Styx", configManager.GetPath(ConfigType.HadesPath), configManager.GetPath(ConfigType.ResourcesPath)));
 
                 Task task =  Task.WhenAll(tasks);
                 await task.ContinueWith(allTask =>

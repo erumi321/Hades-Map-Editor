@@ -166,7 +166,7 @@ namespace Hades_Map_Editor.Data
                 {
                     if (result.ContainsKey(kvp2.Key))
                     {
-                        SJSONObject temp = Merge(kvp2.Value, new SJSONObject(result));
+                        SJSONObject temp = Merge(kvp2.Value, new SJSONObject(result[kvp2.Key]));
                         result[kvp2.Key] = temp;
                     }
                     else

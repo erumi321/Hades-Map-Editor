@@ -1,4 +1,5 @@
 ﻿using Hades_Map_Editor.Data;
+using Hades_Map_Editor.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,15 @@ namespace Hades_Map_Editor.Components
         {
             Initialize();
             Populate();
+            this.SelectedIndexChanged += CustomTabControl_SelectedIndexChanged;
         }
+
+        private void CustomTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ProjectData data = ((CustomTabPage)((CustomTabControl)sender).SelectedTab).data;
+            SaveManager.GetInstance().SetCurrentProject(data);
+        }
+
         public void Initialize()
         {
             tabPages = new List<CustomTabPage>();
@@ -42,6 +51,6 @@ namespace Hades_Map_Editor.Components
             //tabPage1.Controls.Add(this.tab1Button1);
 
             Controls.Add(tabPage);
-        }   
+        }
     }
 }

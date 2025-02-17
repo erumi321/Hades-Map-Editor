@@ -28,7 +28,7 @@ namespace Hades_Map_Editor
                 MapAssetCommon parent = new MapAssetCommon(this);
                 foreach (var assetSub in subAtlases)
                 {
-                    Asset asset =  new Asset(parent, assetSub);
+                    Asset asset =  new Asset(parent, assetSub, false);
                     if (!assets.ContainsKey(asset.type))
                     {
                         Dictionary<string, Asset> list = new Dictionary<string, Asset>();

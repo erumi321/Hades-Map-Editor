@@ -1,5 +1,6 @@
 ﻿using Hades_Map_Editor.Data;
 using Hades_Map_Editor.Managers;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +15,7 @@ namespace Hades_Map_Editor.Components
     public class FilesMenuItem : ToolStripMenuItem, IComponent
     {
         public ToolStripMenuItem
-            newProject, newHadesProject, newHades2Project, openMapOrProject, tempImport, tempMapImport, recentProjects,
+            newProject, newHadesProject, newHades2Project, openMap, openProject, recentProjects,
             save, saveAs, saveAll, export, exportAs, exportAsImage, 
             close, closeAll, parameters, exit;
         HadesMapEditor app;
@@ -35,9 +36,10 @@ namespace Hades_Map_Editor.Components
             newProject = new ToolStripMenuItem("New");
             newHadesProject = new ToolStripMenuItem("New Hades Project");
             newHades2Project = new ToolStripMenuItem("New Hades 2 Project");
-            openMapOrProject = new ToolStripMenuItem("Open .thing_text/.hades_map");
-            tempImport = new ToolStripMenuItem("Open .thing_text (Temporary)");
-            tempMapImport = new ToolStripMenuItem("Open .map_text (Temporary)");
+            openMap = new ToolStripMenuItem("Open .thing_text");
+            openProject = new ToolStripMenuItem("Open .hades_map");
+            //tempImport = new ToolStripMenuItem("Open .thing_text (Temporary)");
+            //tempMapImport = new ToolStripMenuItem("Open .map_text (Temporary)");
             recentProjects = new ToolStripMenuItem("Recent Projects");
             save = new ToolStripMenuItem("Save");
             saveAs = new ToolStripMenuItem("Save As");
@@ -53,9 +55,8 @@ namespace Hades_Map_Editor.Components
             DropDownItems.Add(newProject);
             newProject.DropDownItems.Add(newHadesProject);
             newProject.DropDownItems.Add(newHades2Project);
-            DropDownItems.Add(openMapOrProject);
-            DropDownItems.Add(tempImport);
-            DropDownItems.Add(tempMapImport);
+            DropDownItems.Add(openProject);
+            DropDownItems.Add(openMap);
             DropDownItems.Add(recentProjects);
             foreach (string project in configManager.GetAllProjectPath())
             {
@@ -82,9 +83,8 @@ namespace Hades_Map_Editor.Components
             newHadesProject.Enabled = false;
             newHades2Project.Click += NewHades2Project_Action;
             newHades2Project.Enabled = false;
-            openMapOrProject.Click += OpenMapOrProject_Action;
-            tempImport.Click += TemporaryImport_Action;
-            tempMapImport.Click += TemporaryMapTextImport_Action;
+            openMap.Click += OpenMap_Action;
+            openProject.Click += OpenProject_Action;
             if (recentProjects.DropDownItems.Count > 0)
             {
                 foreach (ToolStripMenuItem recentAction in recentProjects.DropDownItems)
@@ -97,7 +97,7 @@ namespace Hades_Map_Editor.Components
                 recentProjects.Enabled = false;
             }
             save.Click += Save_Action;
-            save.Enabled = false;
+            save.Enabled = true;
             saveAs.Click += SaveAs_Action;
             saveAs.Enabled = false;
             saveAll.Click += SaveAll_Action;
@@ -105,7 +105,7 @@ namespace Hades_Map_Editor.Components
             export.Click += Export_Action;
             export.Enabled = false;
             exportAs.Click += ExportAs_Action;
-            exportAs.Enabled = false;
+            exportAs.Enabled = true;
             exportAsImage.Click += ExportAsImage_Action;
             exportAsImage.Enabled = false;
             close.Click += Close_Action;
@@ -124,47 +124,53 @@ namespace Hades_Map_Editor.Components
         {
             throw new NotImplementedException();
         }
-        private void OpenMapOrProject_Action(object sender, EventArgs e)
+        private void OpenMap_Action(object sender, EventArgs e)
         {
             SaveManager saveManager = SaveManager.GetInstance();
             try
             {
-                app.tabPage.CreateNewTabPage(saveManager.LoadProject(""));
+                ProjectData p = saveManager.ImportMapThingBin("", "");
+                if (p == null)
+                {
+                    return;
+                }
+                app.tabPage.CreateNewTabPage(p);
+            }
+            catch (Exception) { }
+        }
+        private void OpenProject_Action(object sender, EventArgs e)
+        {
+            SaveManager saveManager = SaveManager.GetInstance();
+            try
+            {
+                ProjectData p = saveManager.LoadProject("");
+                if (p == null)
+                {
+                    return;
+                }
+                app.tabPage.CreateNewTabPage(p);
             }
             catch (Exception){ }
         }
-        private void TemporaryImport_Action(object sender, EventArgs e)
-        {
-            SaveManager saveManager = SaveManager.GetInstance();
-            try
-            {
-                app.tabPage.CreateNewTabPage(saveManager.ImportMap(""));
-            }
-            catch (Exception) { }
-        }
 
-        private void TemporaryMapTextImport_Action(object sender, EventArgs e)
-        {
-            SaveManager saveManager = SaveManager.GetInstance();
-            try
-            {
-                app.tabPage.CreateNewTabPage(saveManager.ImportMapText(""));
-            }
-            catch (Exception) { }
-        }
         private void Recent_Action(object sender, EventArgs e)
         {
             SaveManager saveManager = SaveManager.GetInstance();
             try
             {
-                app.tabPage.CreateNewTabPage(saveManager.LoadProject(""));
+                ProjectData p = saveManager.LoadProject("");
+                if (p == null)
+                {
+                    return;
+                }
+                app.tabPage.CreateNewTabPage(p);
             }
             catch (Exception) { }
         }
 
         private void Save_Action(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            SaveManager.GetInstance().SaveProject();
         }
 
         private void SaveAs_Action(object sender, EventArgs e)
@@ -181,7 +187,7 @@ namespace Hades_Map_Editor.Components
         }
         private void ExportAs_Action(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            SaveManager.GetInstance().ExportMap("");
         }
         private void ExportAsImage_Action(object sender, EventArgs e)
         {

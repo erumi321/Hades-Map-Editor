@@ -24,10 +24,16 @@ namespace Hades_Map_Editor.Managers
             }
             return _instance;
         }
+
+        public void SetCurrentProject(ProjectData p)
+        {
+            _projectData = p;
+        }
+
         private SaveManager() { }
         public ProjectData CreateProject(string directoryPath)
         {
-            MapData mapData = new MapData();
+            MapThingData mapData = new MapThingData();
             MapTextData mapTextData = new MapTextData();
             mapData.Obstacles = new List<Obstacle>();
             ProjectData projectData =  new ProjectData(directoryPath+@"\myProject.hades_map", mapData, mapTextData);
@@ -36,28 +42,25 @@ namespace Hades_Map_Editor.Managers
 
             return projectData;
         }
+        public void SaveProject()
+        {
+            if (_projectData.projectPath == "")
+            {
+                _projectData.projectPath = SaveFileDialog();
+            }
+            using (StreamWriter file = new StreamWriter(_projectData.projectPath))
+            {
+                string json = JsonConvert.SerializeObject(_projectData);
+                file.Write(json);
+            }
+            ConfigManager config = ConfigManager.GetInstance();
+            config.AddProjectPath(_projectData.projectPath);
+        }
         public void SaveProject(ProjectData projectData)
         {
             if (projectData.projectPath == "")
             {
-                SaveFileDialog saveFileDialog1 = new SaveFileDialog
-                {
-                    InitialDirectory = @"C:\Users\Alexandre-i5\source\repos\Hades Map Helper\test_data\sample\",
-                    Title = "Browse Map Texts",
-
-                    CheckFileExists = true,
-                    CheckPathExists = true,
-
-                    DefaultExt = "hades_map",
-                    Filter = "map texts (*.hades_map)|*.hades_map",
-                    FilterIndex = 2,
-                    RestoreDirectory = true,
-                };
-
-                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    projectData.projectPath = saveFileDialog1.FileName;
-                }
+                _projectData.projectPath = SaveFileDialog();
             }
             using (StreamWriter file = new StreamWriter(projectData.projectPath))
             {
@@ -69,31 +72,18 @@ namespace Hades_Map_Editor.Managers
         }
         public ProjectData LoadProject(string path)
         {
-            ProjectData projectData;
+            ProjectData projectData = null;
             if (path == "")
             {
-                OpenFileDialog openFileDialog1 = new OpenFileDialog
+                path = OpenFileDialog("Browse Project Files", "hades_map", "hades map project (*.hades_map)|*.hades_map");
+                if (path == null)
                 {
-                    InitialDirectory = @"C:\Users\Alexandre-i5\source\repos\Hades Map Helper\test_data\sample\",
-                    Title = "Browse Map Texts",
-
-                    CheckFileExists = true,
-                    CheckPathExists = true,
-
-                    DefaultExt = "hades_map",
-                    Filter = "map texts (*.hades_map)|*.hades_map",
-                    FilterIndex = 2,
-                    RestoreDirectory = true,
-
-                    ReadOnlyChecked = true,
-                    ShowReadOnly = true
-                };
-                if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    path = openFileDialog1.FileName;
+                    return null;
                 }
             }
-            if(path == "") // Didn't load
+
+
+            if (path == "") // Didn't load
             {
                 throw new NoFileLoadedException();
             }
@@ -102,86 +92,93 @@ namespace Hades_Map_Editor.Managers
                 string json = r.ReadToEnd();
                 projectData = JsonConvert.DeserializeObject<ProjectData>(json);
             }
-            LoadAssetsToMapData(projectData.mapData);
+            LoadAssetsToMapData(projectData.mapThingData);
             ConfigManager config = ConfigManager.GetInstance();
             config.AddProjectPath(projectData.projectPath);
-            _projectData = projectData;
+            if (_projectData == null)
+            {
+                _projectData = projectData;
+            }
             return projectData;            
         }
-        public void ExportMap(MapData mapData)
+        public void ExportMap(string exportPath)
+        {
+            if (_projectData == null)
+            {
+                return;
+            }
+            MapThingData thingData = _projectData.mapThingData;
+
+            if (exportPath == "")
+            {
+                string temp = SaveFileDialog("Export Map", ".thing_bin", "thing binary (*.thing_bin)|*.thing_bin", "", _projectData.name);
+                if (temp == null)
+                {
+                    return;
+                }
+                else
+                {
+                    exportPath = temp;
+                }
+            }
+            using (FileStream r = new FileStream(exportPath, FileMode.OpenOrCreate))
+            {
+                r.SetLength(0);
+                MapThingData.Serialize(r, thingData);
+            }
+        }
+        public ProjectData ImportMapThingBin(string thingPath, string mapPath)
         {
 
-        }
-        public ProjectData ImportMap(string mapPath)
-        {
-            MapData mapData;
-            if (mapPath == "")
-            {
-                try
-                {
-                    mapPath = OpenFile("Browse Thing Texts", "thing_text", "thing texts (*.thing_text)|*.thing_text");
-                }
-                catch (NoFileLoadedException e)
-                {
-                    throw e;
-                }
-                         
-            }
-            using (StreamReader r = new StreamReader(mapPath))
-            {
-                string json = r.ReadToEnd();
-                mapData = JsonConvert.DeserializeObject<MapData>(json);
-            }
-            LoadAssetsToMapData(mapData);
-            string projectPath = Path.ChangeExtension(mapPath, ".hades_map");
-            if (_projectData != null)
-            {
-                _projectData.projectPath = projectPath;
-                _projectData.mapData = mapData;
-            }
-            else
-            {
-                _projectData = new ProjectData(projectPath, mapData);
-            }
-            SaveProject(_projectData);
-            return _projectData;
-
-        }
-        public ProjectData ImportMapText(string mapPath)
-        {
             MapTextData mapTextData;
             if (mapPath == "")
             {
-                try
+                mapPath = OpenFileDialog("Browse Thing Texts", "map_text", "map texts (*.map_text)|*.map_text");
+                
+                if (mapPath == null)
                 {
-                    mapPath = OpenFile("Browse Thing Texts", "map_text", "map texts (*.map_text)|*.map_text");
+                    return _projectData;
                 }
-                catch (NoFileLoadedException e)
-                {
-                    throw e;
-                }
+            }
+            if (thingPath == "")
+            {
+                thingPath = OpenFileDialog("Browse Thing Bin", "thing_bin", "thing binary (*.thing_bin)|*.thing_bin");
 
+                if (thingPath == null)
+                {
+                    return _projectData;
+                }
             }
             using (StreamReader r = new StreamReader(mapPath))
             {
                 string json = r.ReadToEnd();
                 mapTextData = JsonConvert.DeserializeObject<MapTextData>(json);
             }
-            string projectPath = Path.ChangeExtension(mapPath, ".hades_map");
-            if (_projectData != null)
+            MapThingData mapThingData;
+           
+            using (FileStream r = File.OpenRead(thingPath))
             {
-                _projectData.projectPath = projectPath;
-                _projectData.mapTextData = mapTextData;
+                mapThingData = MapThingData.Deserialize(r);
             }
-            else
+            LoadAssetsToMapData(mapThingData);
+
+
+            string projectPath = Path.ChangeExtension(thingPath, ".hades_map");
+
+            ProjectData projectData = new ProjectData(projectPath, mapThingData, mapTextData);
+            
+            ConfigManager config = ConfigManager.GetInstance();
+            config.AddProjectPath(projectData.projectPath);
+            if (_projectData == null)
             {
-                _projectData = new ProjectData(projectPath, null, mapTextData);
+                _projectData = projectData;
             }
-            SaveProject(_projectData);
-            return _projectData;
+
+            SaveProject(projectData);
+            return projectData;
 
         }
-        private void LoadAssetsToMapData(MapData mapData)
+        private void LoadAssetsToMapData(MapThingData mapData)
         {
            
             Dictionary<string, SJSONObject> allObstacles = SJSONLoader.LoadAllSJSONObstacles();
@@ -210,7 +207,7 @@ namespace Hades_Map_Editor.Managers
                         }
                         if (thing.ContainsKey("Scale"))
                         {
-                            obs.Scale *= (double)thing["Scale"];
+                            //obs.Scale *= (double)thing["Scale"];
                         }
                         if (thing.ContainsKey("Invisible") && thing["Invisible"] == true)
                         {
@@ -263,15 +260,47 @@ namespace Hades_Map_Editor.Managers
             }
             return assets;
         }
-        private string OpenFile(
+        private static string SaveFileDialog(string title = "Save File",
+            string defaultExt = "hades_project",
+            string filter = "hades map project (*.hades_project)|*.hades_project",
+            string initialDirectory = @"",
+            string fileName = "")
+        {
+            string path = "";
+            Microsoft.Win32.SaveFileDialog openFileDialog1 = new Microsoft.Win32.SaveFileDialog
+            {
+                InitialDirectory = initialDirectory,
+                Title = title,
+
+                CheckPathExists = true,
+                FileName = fileName,
+                DefaultExt = defaultExt,
+                Filter = filter,
+                FilterIndex = 2,
+                RestoreDirectory = true
+            };
+            if (openFileDialog1.ShowDialog() == true)
+            {
+                path = openFileDialog1.FileName;
+            }
+            if (path == "")
+            {
+                return null;
+            }
+            else
+            {
+                return path;
+            }
+        }
+        private string OpenFileDialog(
             string title = "Browse Files",
             string defaultExt = "hades_map",
             string filter = "map texts (*.hades_map)|*.hades_map",
-            string initialDirectory = @"C:\Users\Alexandre-i5\source\repos\Hades Map Helper\test_data\sample\"    
+            string initialDirectory = @""    
             )
         {
             string path = "";
-            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog
             {
                 InitialDirectory = initialDirectory,
                 Title = title,
@@ -287,13 +316,13 @@ namespace Hades_Map_Editor.Managers
                 ReadOnlyChecked = true,
                 ShowReadOnly = true
             };
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            if (openFileDialog1.ShowDialog() == true)
             {
                 path = openFileDialog1.FileName;
             }
             if(path == "")
             {
-                throw new NoFileLoadedException();
+                return null;
             }
             else
             {

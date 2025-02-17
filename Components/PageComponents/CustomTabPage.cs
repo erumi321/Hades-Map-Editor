@@ -11,7 +11,7 @@ namespace Hades_Map_Editor.Components
 {
     public class CustomTabPage : TabPage, IComponent
     {
-        ProjectData data;
+        public ProjectData data;
         CustomSplitContainer mainSplitContainer, leftSplitContainer, rightSplitContainer, rightRightSplitContainer;
         public PropertiesPanel propertiesPanel;
         public AssetsPanel assetsPanel;
@@ -35,9 +35,7 @@ namespace Hades_Map_Editor.Components
         }
 
         public void Populate()
-        {
-
-        }
+        {        }
         private void CreateSplitContainers()
         {
             mainSplitContainer = new CustomSplitContainer();

@@ -59,11 +59,16 @@ namespace Hades_Map_Editor
 
             //ProjectData projectData;
             SaveManager saveManager = SaveManager.GetInstance();
-            foreach (string path in configManager.GetAllProjectPath())
+            List<string> projPaths = configManager.GetAllProjectPath();
+            for (int i = 0; i < projPaths.Count(); i++)
             {
                 try
                 {
-                    ProjectData projectData = saveManager.LoadProject(path);
+                    ProjectData projectData = saveManager.LoadProject(projPaths[i]);
+                    if (i == 0)
+                    {
+                        saveManager.SetCurrentProject(projectData);
+                    }
                     tabPage.CreateNewTabPage(projectData);
                 }catch(Exception e)
                 {

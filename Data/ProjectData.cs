@@ -13,15 +13,15 @@ namespace Hades_Map_Editor.Data
     {
         public string projectPath;
         public string name;
-        public MapData mapData;
+        public MapThingData mapThingData;
         public MapTextData mapTextData;
         public List<string> hiddenGroups;
 
-        public ProjectData(string projectPath, MapData mapData = null, MapTextData mapTextData = null)
+        public ProjectData(string projectPath, MapThingData mapData = null, MapTextData mapTextData = null)
         {
             if (mapData != null)
             {
-                this.mapData = mapData;
+                this.mapThingData = mapData;
             }
             if (mapTextData != null)
             {

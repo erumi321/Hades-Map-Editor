@@ -149,6 +149,10 @@ namespace Hades_Map_Editor.Sections
 
                 });
                 
+                if (data.hiddenGroups.Contains(group.Id.Name))
+                {
+                    check.Update(false, false);
+                }
 
                 groupNamePanel.Controls.Add(check);
                 groupBoxes.Add(check);

@@ -210,7 +210,7 @@
     <Compile Include="Data\RawAsset.cs" />
     <Compile Include="Data\ProjectData.cs" />
     <Compile Include="Data\RawAtlasJson.cs" />
-    <Compile Include="Data\MapData.cs" />
+    <Compile Include="Data\MapThingData.cs" />
     <Compile Include="Data\SJSONLoader.cs" />
     <Compile Include="Data\SJSONObject.cs" />
     <Compile Include="Managers\FormManager.cs" />

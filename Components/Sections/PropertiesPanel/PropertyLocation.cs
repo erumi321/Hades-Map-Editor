@@ -10,14 +10,14 @@ using System.Drawing;
 
 namespace Hades_Map_Editor.PropertiesSection
 {
-    public class PropertyLocation : PropertyItem<Point>, IComponent
+    public class PropertyLocation : PropertyItem<PointF>, IComponent
     {
         protected TextBox xTextBox;
         protected TextBox yTextBox;
         bool canEdit;
 
-        Action<Point> _onChange;
-        public PropertyLocation(string label, bool edit = false, Action<Point> onChange = null) : base(label)
+        Action<PointF> _onChange;
+        public PropertyLocation(string label, bool edit = false, Action<PointF> onChange = null) : base(label)
         {
             canEdit = edit;
             Initialize();
@@ -71,7 +71,7 @@ namespace Hades_Map_Editor.PropertiesSection
 
         }
 
-        public override void Update(Point value)
+        public override void Update(PointF value)
         {
             xTextBox.Text = string.Format("{0:0}", value.X);
             yTextBox.Text = string.Format("{0:0}", value.Y);

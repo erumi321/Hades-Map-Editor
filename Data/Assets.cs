@@ -84,7 +84,7 @@ namespace Hades_Map_Editor.Data
             return pOriginalSize;
         }
         public Asset() { }
-        public Asset(MapAssetCommon parent, SubAtlaseJson json)
+        public Asset(MapAssetCommon parent, SubAtlaseJson json, bool preloadImage = true)
         {
             ConfigManager configManager = ConfigManager.GetInstance();            
             biome = parent.name.Split('\\').Last().Split('_').First();
@@ -100,7 +100,14 @@ namespace Hades_Map_Editor.Data
             hull = json.GetHull();
             Enum.TryParse(json.name.Split('\\').First(), out AssetType myType);
             type = myType;
-            image = LoadImage();
+            if (preloadImage)
+            {
+                image = LoadImage();
+            }
+            else
+            {
+                image = null;
+            }
         }
 
         public Image GetImage(Size size = new Size())

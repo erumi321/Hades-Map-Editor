@@ -82,7 +82,9 @@ namespace Hades_Map_Editor.MapSection
             if (groupOrdering != null)
             {
                 //load the obstacle ids into obstacleOrder so painting works in the correct order
-                List<Obstacle> sortedObstacles = listOfLoadedAssets.OrderByDescending(o => -1 * groupOrdering[o.GroupNames[0]]).ToList();
+                List<Obstacle> sortedObstacles = listOfLoadedAssets.OrderByDescending(o => -1 * groupOrdering[o.GroupNames[0]])/*.ThenBy(o => o.UseBoundsForSortArea == true? o.Location.Y : 0)*/.ToList();
+
+                List<int> beenAttached = new List<int>();
 
                 List<int> nextIdQueue = new List<int> { sortedObstacles[0].Id };
                 while (nextIdQueue.Count > 0 && sortedObstacles.Count > 0)
@@ -98,11 +100,15 @@ namespace Hades_Map_Editor.MapSection
                         break;
                     }
 
-                    if (obs.AttachToID != 0)
+                    if (!beenAttached.Contains(obs.AttachToID))
                     {
-                        obs.AttachToID = 0;
+                        beenAttached.Add(obs.AttachToID);
                         nextIdQueue.Insert(0, obs.AttachToID);
                         continue;
+                    }
+                    else
+                    {
+                        beenAttached.Remove(obs.AttachToID);
                     }
 
                     nextIdQueue.RemoveAt(0);
@@ -110,14 +116,7 @@ namespace Hades_Map_Editor.MapSection
 
                     obstacleOrder.Add(obs.Id);
 
-                    if (obs.AttachedIDs.Count > 0)
-                    {
-                        for (int i = obs.AttachedIDs.Count() - 1; i >= 0; i--)
-                        {
-                            nextIdQueue.Insert(0, obs.AttachedIDs[i]);
-                        }
-                    }
-                    else if (sortedObstacles.Count > 0)
+                    if (sortedObstacles.Count > 0)
                     {
                         nextIdQueue.Add(sortedObstacles[0].Id);
                     }
@@ -219,6 +218,7 @@ namespace Hades_Map_Editor.MapSection
             }
 
             Size size = obs.GetDimension();
+
             size.Width = (int)(size.Width * CurrentScale);
             size.Height = (int)(size.Height * CurrentScale);
 
@@ -230,15 +230,14 @@ namespace Hades_Map_Editor.MapSection
 
             //obsGraphic.ScaleTransform(CurrentScale, CurrentScale);
             //Transform colors based on obstacle color
-            Color obsColor = obs.GetColor();
+            Color obsColor = obs.Color;
             Tuple<int,int,int> obsHSV = ColorFromHSV(obs.Hue, obs.Saturation, obs.Value);
 
-            //Dont ask me why its B -> R and R-> B, I don't know
             ImageAttributes imageAttributes = new ImageAttributes();
             float[][] colorMatrixElements = {
-                new float[] {(float)obsColor.B / 255,  0,  0,  0, 0},        // red scaling factor
+                new float[] {(float)obsColor.R / 255,  0,  0,  0, 0},        // red scaling factor
                 new float[] {0,  (float)obsColor.G / 255,  0,  0, 0},        // green scaling factor
-                new float[] {0,  0,  (float)obsColor.R / 255,  0, 0},        // blue scaling factor
+                new float[] {0,  0,  (float)obsColor.B / 255,  0, 0},        // blue scaling factor
                 new float[] {0,  0,  0,  (float)obsColor.A / 255, 0},        // alpha scaling factor of 1
                 new float[] {(float)obsHSV.Item1 / 255, (float)obsHSV.Item2 / 255, (float)obsHSV.Item3 / 255,  0, 1 } // additive factor of HSV shift
             };

@@ -37,7 +37,7 @@ namespace Hades_Map_Editor.Sections
         public void LoadElements()
         {
             listBox.BeginUpdate();
-            foreach (var obstacle in data.mapData.GetActiveObstacles())
+            foreach (var obstacle in data.mapThingData.GetActiveObstacles())
             {
                 if (data.hiddenGroups.Contains(obstacle.GroupNames[0]))
                 {

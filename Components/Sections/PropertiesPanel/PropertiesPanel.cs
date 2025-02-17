@@ -101,12 +101,7 @@ namespace Hades_Map_Editor.Sections
                 {
                     return;
                 }
-                Obstacle.JsonColor t = new Obstacle.JsonColor();
-                t.R = c.R;
-                t.G = c.G;
-                t.B = c.B;
-                t.A = c.A;
-                currentObstacle.Color = t;
+                currentObstacle.Color = Color.FromArgb(c.A, c.R, c.G, c.B);
 
                 mapPanel.RefreshObstacle(currentObstacle.Id);
             });
@@ -151,16 +146,13 @@ namespace Hades_Map_Editor.Sections
                 currentObstacle.Invert = v;
                 mapPanel.RefreshObstacle(currentObstacle.Id);
             });
-            location = new PropertyLocation("Location", true, (Point p) =>
+            location = new PropertyLocation("Location", true, (PointF p) =>
             {
                 if (p.X == currentObstacle.Location.X && p.Y == currentObstacle.Location.Y)
                 {
                     return;
                 }
-                Obstacle.JsonPoint t = new Obstacle.JsonPoint();
-                t.X = p.X;
-                t.Y = p.Y;
-                currentObstacle.Location = t;
+                currentObstacle.Location = new PointF(p.X, p.Y);
 
                 mapPanel.RefreshObstacle(currentObstacle.Id);
                 mapPanel.FocusOn(currentObstacle.Id);
@@ -281,7 +273,7 @@ namespace Hades_Map_Editor.Sections
         }
         public void FocusOn(int obsID)
         {
-            currentObstacle = data.mapData.GetFromId(obsID);
+            currentObstacle = data.mapThingData.GetFromId(obsID);
             activateAtRange.Update(currentObstacle.ActivateAtRange);
             activationRange.Update(currentObstacle.ActivationRange);
             active.Update(currentObstacle.Active);
@@ -293,11 +285,11 @@ namespace Hades_Map_Editor.Sections
             causesOcculsion.Update(currentObstacle.CausesOcculsion);
             clutter.Update(currentObstacle.Clutter);
             collision.Update(currentObstacle.Collision);
-            color.Update(currentObstacle.GetColor());
+            color.Update(currentObstacle.Color);
             comments.Update((string)currentObstacle.Comments);
             //createsShadows.Update((bool)currentObstacle.CreatesShadows);
             dataType.Update(currentObstacle.DataType);
-            drawVfxOnTop.Update(currentObstacle.DrawVfxOnTop);
+            drawVfxOnTop.Update(currentObstacle.DrawVfxOnTop == true);
             flipHorizontal.Update(currentObstacle.FlipHorizontal);
             flipVertical.Update(currentObstacle.FlipVertical);
             //groupNames.Update(currentObstacle.GroupNames);
@@ -306,7 +298,7 @@ namespace Hades_Map_Editor.Sections
             id.Update(currentObstacle.Id);
             ignoreGridManager.Update(currentObstacle.IgnoreGridManager);
             invert.Update(currentObstacle.Invert);
-            location.Update(currentObstacle.GetLocation());
+            location.Update(currentObstacle.Location);
             name.Update(currentObstacle.Name);
             offsetZ.Update(currentObstacle.OffsetZ);
             parallaxAmount.Update(currentObstacle.ParallaxAmount);
@@ -325,7 +317,7 @@ namespace Hades_Map_Editor.Sections
                 stopsLight.Update((bool)currentObstacle.StopsLight);
             }
             tallness.Update(currentObstacle.Tallness);
-            useBoundsForSortArea.Update(currentObstacle.UseBoundsForSortArea);
+            useBoundsForSortArea.Update(currentObstacle.UseBoundsForSortArea == true);
             value.Update(currentObstacle.Value);
 
             noSelectionLabel.Visible = false;
